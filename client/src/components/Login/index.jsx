@@ -1,12 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default class Registration extends React.Component {
+export default class Login extends React.Component {
     constructor() {
         super();
         this.state = {
-            firstName: "",
-            lastName: "",
             email: "",
             password: "",
         };
@@ -22,34 +20,24 @@ export default class Registration extends React.Component {
         e.preventDefault();
         console.log("submitForm(). this.state:", this.state);
 
-        fetch("/register", {
+        fetch("/login", {
             method: "POST",
+            headers: {
+                "Content-type": "application...",
+            },
         });
     }
 
     render() {
         return (
             <div className="formMenu">
-                <h2>Registration</h2>
+                <h2>Log in</h2>
                 <p>
-                    Already a member?:
-                    <Link to="/"> Sign in</Link>
+                    Not a member?:
+                    <Link to="/signup"> Sign up</Link>
                 </p>
                 <p className="error-message">{this.state.errorMessage}</p>
                 <form onSubmit={this.formSubmit}>
-                    <input
-                        type="text"
-                        name="firstName"
-                        placeholder="First name"
-                        value={this.state.firstName}
-                        onChange={this.inputChange}
-                    />
-                    <input
-                        type="text"
-                        name="lastName"
-                        placeholder="Last name"
-                        onChange={this.inputChange}
-                    />
                     <input
                         type="email"
                         name="email"

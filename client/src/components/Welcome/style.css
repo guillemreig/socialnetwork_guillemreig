@@ -1,0 +1,71 @@
+/* WELCOME TEXT */
+#Welcome {
+    width: 100vw;
+    height: 100vh;
+
+    background-image: url(https://free4kwallpapers.com/uploads/originals/2016/04/05/prehistoric-stone-age--inspired-by-far-cry-primal-wallpaper.jpg);
+    background-size: cover;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#WelcomeTxt {
+    text-align: center;
+    color: whitesmoke;
+}
+
+#WelcomeTxt h4 {
+    font-size: 40px;
+    margin: 20px 0 0 0;
+}
+
+#WelcomeTxt h1 {
+    color: rgb(255, 176, 80);
+    margin: 0;
+    font-size: 260px;
+    line-height: 200px;
+}
+
+#WelcomeTxt h3 {
+    font-size: 30px;
+    margin: 20px 0 0 0;
+}
+
+#WelcomeTxt h2 {
+    margin: 0 0 10px 0;
+    font-size: 50px;
+}
+
+/* FORM MENU */
+.formMenu {
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.5);
+
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.formMenu form {
+    padding: 10px;
+    margin-top: 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.formMenu input {
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px;
+    width: 200px;
+}
+
+.formMenu button {
+    width: 80px;
+}

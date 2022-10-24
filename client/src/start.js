@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
-import Welcome from "./components/Welcome/index.jsx";
-import Home from "./components/Home/index.jsx";
+import Welcome from "./components/Welcome.jsx";
+import Home from "./components/Home.jsx";
 
 fetch("/user/id.json")
     .then((response) => response.json())
@@ -10,7 +10,7 @@ fetch("/user/id.json")
             ReactDOM.render(<Welcome />, document.querySelector("main"));
         } else {
             console.log("user loged in");
+            // The loged in page:
             ReactDOM.render(<Home />, document.querySelector("main"));
-            // The loged in page
         }
     });

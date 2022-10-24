@@ -41,12 +41,14 @@
     line-height: 260px;
     position: relative;
     margin-bottom: -40px;
+
     background: url(https://wallpaperaccess.com/full/4856616.jpg);
     background-clip: border-box;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+
     text-shadow: none;
-    background-size: 50%;
+    background-size: 39%;
     z-index: 1;
 }
 

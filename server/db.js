@@ -47,25 +47,38 @@ function getUser(email) {
 // Password reset
 function storeCode(email, code) {
     const sql = `
-    INSERT INTO users (code)
-    VALUES ($2)
-    WHERE email = $1
+    INSERT INTO codes (user_email, code)
+    VALUES ($1, $2)
+    RETURNING *
     ;`;
     return db
         .query(sql, [email, code])
         .then((result) => result.rows)
-        .catch((error) => console.log("Error in getUser:", error));
+        .catch((error) => console.log("Error in storeCode:", error));
 }
 
-function resetPassword(id, password) {
+function checkCode(email) {
     const sql = `
-    UPDATE users SET password = $2
-    WHERE id = $1
+    SELECT code
+    FROM codes
+    WHERE user_email = $1 AND CURRENT_TIMESTAMP - created_at < INTERVAL '10 minutes'
+    ORDER BY created_at DESC
     ;`;
     return db
-        .query(sql, [id, password]) // correct way to add data to sql
+        .query(sql, [email])
         .then((result) => result.rows)
-        .catch((error) => console.log("Error in editRepresentative:", error));
+        .catch((error) => console.log("Error in checkCode:", error));
+}
+
+function resetPassword(email, password) {
+    const sql = `
+    UPDATE users SET password = $2
+    WHERE email = $1
+    ;`;
+    return db
+        .query(sql, [email, password]) // correct way to add data to sql
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in resetPassword:", error));
 }
 
 // EXPORTS
@@ -74,5 +87,6 @@ module.exports = {
     createUser,
     getUser,
     storeCode,
+    checkCode,
     resetPassword,
 };

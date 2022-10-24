@@ -8,6 +8,10 @@ const cryptoRandomString = require("crypto-random-string");
 // Database
 const db = require("./db");
 
+/// AWS ///
+// const aws = require("aws-sdk");
+// let secrets;
+
 // Encryption
 const bcrypt = require("bcryptjs");
 bcrypt;
@@ -60,14 +64,20 @@ app.post("/registration", (req, res) => {
         !req.body.email ||
         !req.body.password
     ) {
-        throw new Error("ERROR: REGISTRATION missing fields");
+        res.json({
+            success: false,
+            message: "Missing fields!",
+        });
     } else if (
         // Check if valid input format
         !req.body.email.match(emailRegex) ||
         !req.body.firstName.match(namesRegex) ||
         !req.body.lastName.match(namesRegex)
     ) {
-        throw new Error("ERROR: REGISTRATION invalid input");
+        res.json({
+            success: false,
+            message: "Invalid input!",
+        });
     } else {
         // Check if email already exists
         db.checkEmail(req.body.email)
@@ -151,35 +161,72 @@ app.post("/getcode", (req, res) => {
     db.getUser(req.body.email)
         .then((data) => {
             if (data.length) {
+                // Generate code
                 const secretCode = cryptoRandomString({
                     length: 6,
                 });
                 console.log("secretCode :", secretCode);
-                req.session.code = secretCode; // I don't like storing the code in a cookie. Should be stored in the server.
-                // bcrypt
-                //     .compare(req.body.password, data[0].password)
-                //     .then((compare) => {
-                //         if (compare) {
-                //             delete data[0].password; // caution!
-                //             console.log("data[0] :", data[0]);
-                //             req.session = Object.assign(req.session, data[0]);
-                //             res.json({
-                //                 success: true,
-                //                 message: "Log in successful!",
-                //             });
-                //         } else {
-                //             res.json({
-                //                 success: false,
-                //                 message: "Wrong password!",
-                //             });
-                //         }
-                //     });
+                // Store the email-code pair in the database
+                return db.storeCode(req.body.email, secretCode);
             } else {
                 res.json({
                     success: false,
                     message: "No matching email!",
                 });
             }
+        })
+        .then((data) => {
+            console.log("data[0].user_email :", data[0].user_email);
+            console.log("data[0].code :", data[0].code);
+            // (Code to send the code to email here)
+            return undefined;
+        })
+        .then(() => {
+            res.json({
+                success: true,
+                message: "Code sent!",
+            });
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+});
+
+app.post("/resetpassword", (req, res) => {
+    console.log("RESET PASSWORD req.body :", req.body);
+    db.checkCode(req.body.email)
+        .then((data) => {
+            if (data.length > 0) {
+                if (req.body.code === data[0].code) {
+                    // Generate salt
+                    return bcrypt.genSalt();
+                } else {
+                    // End the process
+                    res.json({
+                        success: false,
+                        message: "Wrong code! Try again.",
+                    });
+                }
+            } else {
+                res.json({
+                    success: false,
+                    message: "Code expired! Try again.",
+                });
+            }
+        })
+        .then((salt) => {
+            // Hash the new password with the salt
+            return bcrypt.hash(req.body.password, salt);
+        })
+        .then((hash) => {
+            // Reset password
+            return db.resetPassword(req.body.email, hash);
+        })
+        .then(() => {
+            res.json({
+                success: true,
+                message: "Password has been reset!",
+            });
         })
         .catch((error) => {
             console.log(error);

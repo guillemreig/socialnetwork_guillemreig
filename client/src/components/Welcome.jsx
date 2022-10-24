@@ -1,9 +1,9 @@
 import "./style.css";
 import { BrowserRouter, Route } from "react-router-dom";
 
-import Login from "../Login/index.jsx";
-import Registration from "../Registration/index.jsx";
-import Password from "../Password/index.jsx";
+import Login from "./Login.jsx";
+import Registration from "./Registration.jsx";
+import Password from "./Password.jsx";
 
 export default function Welcome() {
     return (

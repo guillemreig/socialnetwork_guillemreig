@@ -1,11 +1,9 @@
-import "./style.css";
 import { BrowserRouter, Route } from "react-router-dom";
 
-import Login from "../Login/index.jsx";
-import Registration from "../Registration/index.jsx";
-import Password from "../Password/index.jsx";
+import NewGame from "../NewGame/index.jsx";
+import Profile from "../Profile/index.jsx";
 
-export default function Welcome() {
+export default function Home() {
     return (
         <div id="Welcome">
             <div id="WelcomeTxt">
@@ -14,18 +12,13 @@ export default function Welcome() {
                     <h1 id="logo">TRIBES</h1>
                     <h1 id="logoShadow">TRIBES</h1>
                 </div>
-                <h3>Join now and claim your</h3>
-                <h2>FREEDOM</h2>
             </div>
             <BrowserRouter>
                 <Route exact path="/">
-                    <Login />
+                    <NewGame />
                 </Route>
-                <Route path="/signup">
-                    <Registration />
-                </Route>
-                <Route path="/password">
-                    <Password />
+                <Route path="/profile">
+                    <Profile />
                 </Route>
             </BrowserRouter>
         </div>

@@ -1,31 +1,26 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default class Registration extends React.Component {
+export default class Login extends React.Component {
     constructor() {
         super();
         this.state = {
             message: "",
-            firstName: "",
-            lastName: "",
             email: "",
-            password: "",
         };
-        this.message = "";
         this.inputChange = this.inputChange.bind(this);
         this.submitForm = this.submitForm.bind(this);
     }
     inputChange(e) {
         console.log("inputChange()");
         this.setState({ [e.target.name]: e.target.value });
-        // change state // {property_name : property_value}
     }
 
     submitForm(e) {
         e.preventDefault();
         console.log("submitForm(). this.state:", this.state);
 
-        fetch("/registration", {
+        fetch("/getcode", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -41,7 +36,7 @@ export default class Registration extends React.Component {
                     location.reload();
                 } else {
                     this.setState({ message: data.message });
-                    throw new Error("REGISTRATION FAILED");
+                    throw new Error("VERIFICATION FAILED");
                 }
             })
             .catch((error) => {
@@ -52,39 +47,22 @@ export default class Registration extends React.Component {
     render() {
         return (
             <div className="formMenu">
-                <h2>Registration</h2>
+                <h2>Reset Password</h2>
                 <p>
-                    Already a member?: <Link to="/">Log in</Link>
+                    Write your email to get
+                    <br></br> the reset code:
                 </p>
                 <p className="message">{this.state.message}</p>
                 <form onSubmit={this.formSubmit}>
-                    <input
-                        type="text"
-                        name="firstName"
-                        placeholder="First name"
-                        value={this.state.firstName}
-                        onChange={this.inputChange}
-                    />
-                    <input
-                        type="text"
-                        name="lastName"
-                        placeholder="Last name"
-                        onChange={this.inputChange}
-                    />
                     <input
                         type="email"
                         name="email"
                         placeholder="email"
                         onChange={this.inputChange}
                     />
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        onChange={this.inputChange}
-                    />
-                    <button onClick={this.submitForm}>Submit</button>
+                    <button onClick={this.submitForm}>Send</button>
                 </form>
+                <Link to="/">I remember now!</Link>
             </div>
         );
     }

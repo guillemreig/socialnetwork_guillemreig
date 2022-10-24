@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 
 export default class Login extends React.Component {
     constructor() {
@@ -48,27 +48,7 @@ export default class Login extends React.Component {
     render() {
         return (
             <div className="formMenu">
-                <h2>Log in</h2>
-                <p>
-                    Not a member?: <Link to="/signup">Sign up</Link>
-                </p>
-                <p className="message">{this.state.message}</p>
-                <form onSubmit={this.formSubmit}>
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="email"
-                        onChange={this.inputChange}
-                    />
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        onChange={this.inputChange}
-                    />
-                    <button onClick={this.submitForm}>Submit</button>
-                </form>
-                <Link to="/password">I forgot my password</Link>
+                <div></div>
             </div>
         );
     }

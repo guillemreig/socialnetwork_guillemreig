@@ -3,10 +3,10 @@ const express = require("express");
 const app = express();
 const compression = require("compression");
 const path = require("path");
+const cryptoRandomString = require("crypto-random-string");
 
 // Database
 const db = require("./db");
-db;
 
 // Encryption
 const bcrypt = require("bcryptjs");
@@ -33,31 +33,30 @@ app.use(compression());
 
 app.use(express.static(path.join(__dirname, "..", "client", "public")));
 
-// function ensure signed in
-// if (req.session.id)
-// return res.json()
+app.use(express.json()); // This is needed to read the req.body
 
 // ROUTES
 app.get("/user/id.json", (req, res) => {
     console.log("req.session :", req.session);
-    if (req.session.userId) {
-        return res.json({
-            userId: req.session.userId,
+    if (req.session.id) {
+        res.json({
+            id: req.session.id,
+        });
+    } else {
+        res.json({
+            id: undefined,
         });
     }
-    return res.json({
-        userId: undefined,
-    });
 });
 
-// Sign up
-app.post("/registration.json", (req, res) => {
+// Registration
+app.post("/registration", (req, res) => {
     console.log("REGISTRATION. req.body :", req.body);
 
     if (
         // Check if empty fields
-        !req.body.first_name ||
-        !req.body.last_name ||
+        !req.body.firstName ||
+        !req.body.lastName ||
         !req.body.email ||
         !req.body.password
     ) {
@@ -65,8 +64,8 @@ app.post("/registration.json", (req, res) => {
     } else if (
         // Check if valid input format
         !req.body.email.match(emailRegex) ||
-        !req.body.first_name.match(namesRegex) ||
-        !req.body.last_name.match(namesRegex)
+        !req.body.firstName.match(namesRegex) ||
+        !req.body.lastName.match(namesRegex)
     ) {
         throw new Error("ERROR: REGISTRATION invalid input");
     } else {
@@ -74,7 +73,10 @@ app.post("/registration.json", (req, res) => {
         db.checkEmail(req.body.email)
             .then((data) => {
                 if (data.length && data[0].id != req.session.id) {
-                    throw new Error("ERROR: REGISTRATION email already in use");
+                    res.json({
+                        success: false,
+                        message: "Email already in use!",
+                    });
                 } else {
                     // Generate salt for password
                     return bcrypt.genSalt();
@@ -87,38 +89,101 @@ app.post("/registration.json", (req, res) => {
             .then((hash) => {
                 // Create user
                 return db.createUser(
-                    req.body.first_name,
-                    req.body.last_name,
+                    req.body.firstName,
+                    req.body.lastName,
                     req.body.email,
                     hash
                 );
             })
             .then((data) => {
-                // Store user id as cookie, and send data to client
-                req.session.userId = data[0].id;
+                // Store user data as cookie, and send data to client
+                req.session = Object.assign(req.session, data[0]);
                 res.json({
                     success: true,
                     message: "Registration successful!",
                 });
             })
             .catch((error) => {
-                res.json({
-                    success: false,
-                    message: error,
-                });
+                console.log(error);
             });
     }
 });
 
 // Log in
 app.post("/login", (req, res) => {
-    console.log("LOGIN. req.body :", req.body);
+    console.log("LOG IN. req.body:", req.body);
+    db.getUser(req.body.email)
+        .then((data) => {
+            if (data.length) {
+                bcrypt
+                    .compare(req.body.password, data[0].password)
+                    .then((compare) => {
+                        if (compare) {
+                            delete data[0].password; // caution!
+                            console.log("data[0] :", data[0]);
+                            req.session = Object.assign(req.session, data[0]);
+                            res.json({
+                                success: true,
+                                message: "Log in successful!",
+                            });
+                        } else {
+                            res.json({
+                                success: false,
+                                message: "Wrong password!",
+                            });
+                        }
+                    });
+            } else {
+                res.json({
+                    success: false,
+                    message: "No matching email!",
+                });
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+});
 
-    req;
-    res;
-    // validate the user
-    // put user id in session
-    // respond with JSON (wether is successful or not)
+// Reset password
+app.post("/getcode", (req, res) => {
+    console.log("GET CODE. req.body:", req.body);
+    db.getUser(req.body.email)
+        .then((data) => {
+            if (data.length) {
+                const secretCode = cryptoRandomString({
+                    length: 6,
+                });
+                console.log("secretCode :", secretCode);
+                req.session.code = secretCode; // I don't like storing the code in a cookie. Should be stored in the server.
+                // bcrypt
+                //     .compare(req.body.password, data[0].password)
+                //     .then((compare) => {
+                //         if (compare) {
+                //             delete data[0].password; // caution!
+                //             console.log("data[0] :", data[0]);
+                //             req.session = Object.assign(req.session, data[0]);
+                //             res.json({
+                //                 success: true,
+                //                 message: "Log in successful!",
+                //             });
+                //         } else {
+                //             res.json({
+                //                 success: false,
+                //                 message: "Wrong password!",
+                //             });
+                //         }
+                //     });
+            } else {
+                res.json({
+                    success: false,
+                    message: "No matching email!",
+                });
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 });
 
 app.get("*", function (req, res) {

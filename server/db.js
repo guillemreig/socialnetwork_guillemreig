@@ -44,9 +44,35 @@ function getUser(email) {
         .catch((error) => console.log("Error in getUser:", error));
 }
 
+// Password reset
+function storeCode(email, code) {
+    const sql = `
+    INSERT INTO users (code)
+    VALUES ($2)
+    WHERE email = $1
+    ;`;
+    return db
+        .query(sql, [email, code])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in getUser:", error));
+}
+
+function resetPassword(id, password) {
+    const sql = `
+    UPDATE users SET password = $2
+    WHERE id = $1
+    ;`;
+    return db
+        .query(sql, [id, password]) // correct way to add data to sql
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in editRepresentative:", error));
+}
+
 // EXPORTS
 module.exports = {
     checkEmail,
     createUser,
     getUser,
+    storeCode,
+    resetPassword,
 };

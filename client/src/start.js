@@ -7,6 +7,7 @@ fetch("/user/id.json")
     .then((data) => {
         console.log("/user/id.json data:", data);
         if (!data.id) {
+            console.log("user NOT loged in");
             ReactDOM.render(<Welcome />, document.querySelector("main"));
         } else {
             console.log("user loged in");

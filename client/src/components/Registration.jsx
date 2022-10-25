@@ -18,7 +18,6 @@ export default class Registration extends React.Component {
     inputChange(e) {
         console.log("inputChange()");
         this.setState({ [e.target.name]: e.target.value });
-        // change state // {property_name : property_value}
     }
 
     submitForm(e) {
@@ -62,7 +61,6 @@ export default class Registration extends React.Component {
                         type="text"
                         name="firstName"
                         placeholder="First name"
-                        value={this.state.firstName}
                         onChange={this.inputChange}
                     />
                     <input

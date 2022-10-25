@@ -11,8 +11,8 @@ export default function Welcome() {
             <div id="WelcomeTxt">
                 <h4>Welcome to</h4>
                 <div>
-                    <h1 id="logo">TRIBES</h1>
-                    <h1 id="logoShadow">TRIBES</h1>
+                    <h1 id="logo">TRIBE</h1>
+                    <h1 id="logoShadow">TRIBE</h1>
                 </div>
                 <h3>Join now and claim your</h3>
                 <h2>FREEDOM</h2>

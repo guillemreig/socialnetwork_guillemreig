@@ -7,6 +7,8 @@ CREATE TABLE users (
     last_name VARCHAR NOT NULL,
     email VARCHAR NOT NULL UNIQUE,
     password VARCHAR NOT NULL,
+    picture VARCHAR,
+    bio VARCHAR,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -16,5 +18,12 @@ CREATE TABLE codes (
     code VARCHAR,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- CREATE TABLE characters (
+--     id SERIAL PRIMARY KEY,
+--     user_id VARCHAR NOT NULL UNIQUE REFERENCES users (id),
+--     picture VARCHAR,
+--     bio VARCHAR
+-- );
 
 

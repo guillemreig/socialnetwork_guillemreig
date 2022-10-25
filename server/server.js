@@ -130,6 +130,7 @@ app.post("/login", (req, res) => {
                     .then((compare) => {
                         if (compare) {
                             delete data[0].password; // caution!
+
                             console.log("data[0] :", data[0]);
                             req.session = Object.assign(req.session, data[0]);
                             res.json({
@@ -153,6 +154,28 @@ app.post("/login", (req, res) => {
         .catch((error) => {
             console.log(error);
         });
+});
+
+// get user data
+app.get("/user", (req, res) => {
+    console.log("GET USER. req.session.id :", req.session.id);
+    db.getUserById(req.session.id)
+        .then((data) => {
+            console.log("data :", data);
+            delete data[0].password; // caution!
+            data[0].created_at = data[0].created_at.toString().split(" GMT")[0];
+
+            res.json(data[0]);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+});
+
+// Log out
+app.get("/logout", (req, res) => {
+    req.session = null;
+    res.redirect("/");
 });
 
 // Reset password
@@ -196,6 +219,7 @@ app.post("/resetpassword", (req, res) => {
     console.log("RESET PASSWORD req.body :", req.body);
     db.checkCode(req.body.email)
         .then((data) => {
+            console.log("data :", data);
             if (data.length > 0) {
                 if (req.body.code === data[0].code) {
                     // Generate salt

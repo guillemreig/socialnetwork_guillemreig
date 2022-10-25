@@ -44,6 +44,18 @@ function getUser(email) {
         .catch((error) => console.log("Error in getUser:", error));
 }
 
+function getUserById(id) {
+    const sql = `
+    SELECT *
+    FROM users
+    WHERE id = $1
+    ;`;
+    return db
+        .query(sql, [id])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in getUser:", error));
+}
+
 // Password reset
 function storeCode(email, code) {
     const sql = `
@@ -81,12 +93,28 @@ function resetPassword(email, password) {
         .catch((error) => console.log("Error in resetPassword:", error));
 }
 
+// Profile
+function getProfile(id) {
+    const sql = `
+    SELECT user.id, first_name, last_name, email, password, created_at, picture, bio
+    FROM users LEFT OUTER JOIN profiles
+    ON users.id = user_id
+    WHERE email = $1
+    ;`;
+    return db
+        .query(sql, [id])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in getRepresentative:", error));
+}
+
 // EXPORTS
 module.exports = {
     checkEmail,
     createUser,
     getUser,
+    getUserById,
     storeCode,
     checkCode,
     resetPassword,
+    getProfile,
 };

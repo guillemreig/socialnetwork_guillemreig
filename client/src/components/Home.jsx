@@ -2,53 +2,100 @@ import { Component } from "react";
 
 // import { BrowserRouter, Route } from "react-router-dom";
 
-import NewGame from "./NewGame.jsx";
+// import NewGame from "./NewGame.jsx";
 import Profile from "./Profile.jsx";
 import Uploader from "./Profile.jsx";
 
 export default class Home extends Component {
-    constructor(props) {
-        super(props);
+    constructor() {
+        super();
         this.state = {
-            userName: "placeholder",
-            isPopupOpen: false,
+            user: {
+                first_name: "",
+                last_name: "",
+                email: "",
+                picture: "",
+                bio: "",
+            },
+            profileMenu: false,
         };
 
-        this.togglePopup = this.togglePopup.bind(this);
+        this.toggleProfile = this.toggleProfile.bind(this);
     }
 
-    componentDidMount() {
-        // fetch user info from server
-        // add it to the state
+    logOut() {
+        console.log("logOut()");
+        fetch("/logout");
+        location.reload();
     }
 
-    togglePopup() {
+    toggleProfile() {
         // Set it to the opposite of the current value
+        console.log("toggleProfile()");
         this.setState({
-            isPopupOpen: !this.state.isPopupOpen,
+            profileMenu: !this.state.profileMenu,
         });
     }
 
-    // setProfilePic(url) {
-
-    // }
+    componentDidMount() {
+        console.log("componentDidMount()");
+        // fetch user info from server
+        // add it to the state
+        fetch("/user")
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                this.setState({ user: data });
+                console.log("this.state.user :", this.state.user);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
 
     render() {
         return (
-            <div id="Welcome">
-                <div id="WelcomeTxt">
-                    <h4>Welcome to</h4>
-                    <div>
-                        <h1 id="logo">TRIBES</h1>
-                        <h1 id="logoShadow">TRIBES</h1>
+            <div id="Home">
+                <header>
+                    <div className="logMenu">
+                        <img
+                            src={this.state.user.picture || "default_user.jpg"}
+                            id="headerUserPicture"
+                            alt="user picture"
+                            onClick={this.toggleProfile}
+                        />
+                        <h3 className="button" onClick={this.toggleProfile}>
+                            {this.state.user.first_name}{" "}
+                            {this.state.user.last_name}
+                        </h3>
                     </div>
-                    <NewGame />
+                    <div>
+                        <h1 id="miniLogo">TRIBE</h1>
+                        <h1 id="miniLogoShadow">TRIBE</h1>
+                    </div>
+                    <div className="logMenu">
+                        <img
+                            src="logout.png"
+                            id="headerIcon"
+                            alt="exit"
+                            onClick={this.logOut}
+                        />
+                        <h3 className="button" onClick={this.logOut}>
+                            Log out
+                        </h3>
+                    </div>
+                </header>
+
+                {/* <NewGame /> */}
+                {this.state.profileMenu && (
                     <Profile
-                        userName={this.state.userName}
-                        togglePopup={this.togglePopup}
+                        user={this.state.user}
+                        toggleProfile={this.toggleProfile}
                     />
-                    {this.isPopupOpen && <Uploader />}
-                </div>
+                )}
+
+                {this.isPopupOpen && <Uploader />}
             </div>
         );
     }

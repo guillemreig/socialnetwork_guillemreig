@@ -1,0 +1,295 @@
+/* FONTS */
+@font-face {
+    font-family: "Old Stone";
+    src: url("OldStone.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "DIOGENES";
+    src: url("DIOGENES.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* WELCOME */
+#Welcome {
+    width: 100vw;
+    height: 100vh;
+
+    background-image: url(https://free4kwallpapers.com/uploads/originals/2016/04/05/prehistoric-stone-age--inspired-by-far-cry-primal-wallpaper.jpg);
+    background-position: center;
+    background-size: auto 105%;
+
+    animation: panning 30s infinite ease-in-out;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#WelcomeTxt {
+    text-align: center;
+    /* color: #8a0e0e; */
+    /* text-shadow: rgb(255 107 0) 0 0 10px; */
+    background-image: url(https://www.onlygfx.com/wp-content/uploads/2016/02/red-paint-texture-1.jpg);
+    background-clip: border-box;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: contain;
+}
+
+#WelcomeTxt h4 {
+    font-family: "DIOGENES", montserrat, sans-serif;
+    font-weight: normal;
+    font-size: 40px;
+    margin: 30px 0 0 0;
+}
+
+/* HOME */
+#Home {
+    width: 100vw;
+    height: 100vh;
+
+    background-image: url(https://media.moddb.com/images/games/1/48/47046/FC_Primal_Twitter_Tweet_3.jpg);
+    background-position: center;
+    background-size: auto 105%;
+
+    animation: panning 30s infinite ease-in-out;
+
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    width: 100%;
+    margin: 0;
+    height: 60px;
+    background-color: rgba(0, 0, 0, 0.344);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;
+}
+
+#miniLogo {
+    font-family: "Old Stone", montserrat, sans-serif;
+    font-weight: normal;
+    margin-top: 10px;
+    font-size: 60px;
+    line-height: 60px;
+    position: relative;
+
+    background: url(https://wallpaperaccess.com/full/4856616.jpg);
+    background-clip: border-box;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    text-shadow: none;
+    background-size: 100%;
+    z-index: 1;
+}
+
+#miniLogoShadow {
+    font-family: "Old Stone", montserrat, sans-serif;
+    color: rgb(124 94 66);
+    font-weight: bold;
+    text-shadow: rgba(0, 0, 0, 0.7) 0 0 5px;
+    top: -60px;
+    margin-bottom: -60px;
+    font-size: 60px;
+    line-height: 60px;
+    position: relative;
+}
+
+.logMenu {
+    margin: 10px 26px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#headerIcon {
+    height: 30px;
+    width: 30px;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+#headerUserPicture {
+    height: 50px;
+    width: 50px;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.button {
+    cursor: pointer;
+    color: #ffddb0;
+}
+
+.button:hover {
+    color: white;
+}
+
+/* COMMON */
+#logo {
+    font-family: "Old Stone", montserrat, sans-serif;
+    font-weight: normal;
+    font-size: 260px;
+    line-height: 260px;
+    position: relative;
+    margin-bottom: -40px;
+
+    background: url(https://wallpaperaccess.com/full/4856616.jpg);
+    background-clip: border-box;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    text-shadow: none;
+    background-size: 45%;
+    z-index: 1;
+}
+
+#logoShadow {
+    font-family: "Old Stone", montserrat, sans-serif;
+    color: rgba(0, 0, 0, 0);
+    text-shadow: rgba(0, 0, 0, 0.7) 0 0 5px;
+    top: -220px;
+    margin-bottom: -260px;
+    font-size: 260px;
+    line-height: 260px;
+    position: relative;
+}
+
+#WelcomeTxt h3 {
+    font-family: "DIOGENES", montserrat, sans-serif;
+    font-weight: normal;
+    font-size: 30px;
+    margin: 20px 0 0 0;
+}
+
+#WelcomeTxt h2 {
+    font-family: "DIOGENES", montserrat, sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    margin: 0 0 10px 0;
+    font-size: 50px;
+}
+
+/* FORM MENU */
+.formMenu {
+    margin: 0 auto;
+    padding: 20px;
+    color: #ffddb0;
+    border: 2px solid #412c0f;
+    background-color: #231809d5;
+    height: fit-content;
+
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.formMenu a {
+    color: white;
+}
+
+.formMenu form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.message {
+    height: 20px;
+    color: #d31919;
+}
+
+.formMenu input {
+    border: 1px solid #875b1e;
+    padding: 5px;
+    width: 240px;
+    font-weight: bold;
+}
+
+.centeredFlex {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.formMenu .nameInput {
+    border: 1px solid #875b1e;
+    padding: 5px;
+    width: 110px;
+    font-weight: bold;
+}
+
+.formMenu button {
+    width: 80px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* PROFILE */
+.overlay {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    z-index: 2;
+}
+
+#xBtn {
+    position: relative;
+    float: right;
+    margin: -10px -5px;
+    cursor: pointer;
+}
+
+#cardDiv {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+#userInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#bioDiv {
+    width: 400px;
+    text-align: left;
+}
+
+#picture {
+    width: 240px;
+    height: 240px;
+    object-fit: cover;
+}
+
+@keyframes panning {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: -80px 0%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}

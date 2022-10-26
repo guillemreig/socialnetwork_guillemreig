@@ -21,7 +21,6 @@ export default class Profile extends Component {
     toggleEditMode() {
         console.log("toggleEditMode()");
 
-        console.log("this.state", this.state);
         this.setState({
             editMode: !this.state.editMode,
         });
@@ -32,8 +31,7 @@ export default class Profile extends Component {
         this.setState({ [e.target.name]: e.target.value });
     }
 
-    submitForm(e) {
-        e.preventDefault();
+    submitForm() {
         console.log("saveChanges(). this.state:", this.state);
 
         fetch("/profile", {
@@ -49,8 +47,7 @@ export default class Profile extends Component {
             .then((data) => {
                 console.log("data :", data);
                 if (data.success) {
-                    // Should remove message and editMode first
-                    updateProfile(this.state);
+                    this.props.updateProfile(this.state);
                     // location.reload();
                 } else {
                     this.setState({ message: data.message });
@@ -63,21 +60,11 @@ export default class Profile extends Component {
     }
 
     componentDidMount() {
-        console.log("componentDidMount()");
-
-        console.log("this.props.user", this.props.user);
+        console.log("componentDidMount(). this.props.user :", this.props.user);
 
         for (const property in this.props.user) {
             this.setState({ [property]: this.props.user[property] });
         }
-
-        // Testing
-        //         this.setState({
-        //             bio: `This is a test bio.
-        // This should be the first paragraph of the bio, and it should be formated nicely, even if it takes more than two lines of text.
-        // The second paragraph should be here, not before and definitely not after, even though it can be added later, but never before.
-        // This is goodbye. THE END`,
-        //         });
     }
 
     render() {
@@ -154,7 +141,7 @@ export default class Profile extends Component {
                             </div>
                             <h3>Bio</h3>
                             {!this.state.editMode && (
-                                <p>{this.props.user.bio}</p>
+                                <p id="bio">{this.props.user.bio}</p>
                             )}
 
                             {this.state.editMode && (
@@ -162,21 +149,26 @@ export default class Profile extends Component {
                                     name="bio"
                                     id="textarea"
                                     cols="53"
-                                    rows="18"
+                                    rows="17"
                                     onChange={this.inputChange}
                                     value={this.state.bio}
                                 ></textarea>
                             )}
 
                             {this.state.editMode && (
-                                <div className="centeredFlex">
-                                    <button onClick={this.toggleEditMode}>
-                                        Back
-                                    </button>
-                                    <button onClick={this.submitForm}>
-                                        Save
-                                    </button>
-                                </div>
+                                <>
+                                    <p className="message">
+                                        {this.state.message}
+                                    </p>
+                                    <div className="centeredFlex">
+                                        <button onClick={this.toggleEditMode}>
+                                            Back
+                                        </button>
+                                        <button onClick={this.submitForm}>
+                                            Save
+                                        </button>
+                                    </div>
+                                </>
                             )}
                         </div>
                     </div>

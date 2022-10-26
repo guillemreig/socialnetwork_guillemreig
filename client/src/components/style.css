@@ -211,7 +211,7 @@ header {
     color: #d31919;
 }
 
-.formMenu input {
+input {
     border: 1px solid #875b1e;
     padding: 5px;
     width: 240px;
@@ -276,11 +276,30 @@ header {
     text-align: left;
 }
 
+#bio {
+    max-width: 400px;
+}
+
 #picture {
     width: 240px;
     height: 240px;
     object-fit: cover;
 }
+
+/* SEARCH USER */
+#searchUserDiv {
+    height: 28.5px;
+}
+
+#resultList {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    border: none;
+}
+
+/* ANIMATIONS */
 
 @keyframes panning {
     0% {

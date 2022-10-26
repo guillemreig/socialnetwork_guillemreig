@@ -4,7 +4,8 @@ import { Component } from "react";
 
 // import NewGame from "./NewGame.jsx";
 import Profile from "./Profile.jsx";
-import Uploader from "./Profile.jsx";
+// import Uploader from "./Profile.jsx";
+import SearchUser from "./SearchUser.jsx";
 
 export default class Home extends Component {
     constructor() {
@@ -21,6 +22,7 @@ export default class Home extends Component {
         };
 
         this.toggleProfile = this.toggleProfile.bind(this);
+        this.updateProfile = this.updateProfile.bind(this);
     }
 
     logOut() {
@@ -37,25 +39,29 @@ export default class Home extends Component {
         });
     }
 
-    updateProfile(data) {
-        console.log("updateProfile()");
+    updateProfile(draft) {
+        console.log("updateProfile(). draft :", draft);
 
-        for (const property in data) {
-            this.setState({ [property]: data[property] });
-        }
+        // Should remove message and editMode first (also closes edit mode)
+        delete draft.message;
+        delete draft.editMode;
+
+        this.setState({ user: { ...draft } });
     }
 
     componentDidMount() {
         console.log("componentDidMount()");
         // fetch user info from server
-        // add it to the state
         fetch("/user")
             .then((res) => {
                 return res.json();
             })
             .then((data) => {
                 !data.bio && (data.bio = "");
+
+                // add it to the state
                 this.setState({ user: data });
+
                 console.log("this.state.user :", this.state.user);
             })
             .catch((error) => {
@@ -79,6 +85,7 @@ export default class Home extends Component {
                             {this.state.user.last_name}
                         </h3>
                     </div>
+                    <SearchUser />
                     <div>
                         <h1 id="miniLogo">TRIBE</h1>
                         <h1 id="miniLogoShadow">TRIBE</h1>
@@ -105,7 +112,7 @@ export default class Home extends Component {
                     />
                 )}
 
-                {this.isPopupOpen && <Uploader />}
+                {/* {this.isPopupOpen && <Uploader />} */}
             </div>
         );
     }

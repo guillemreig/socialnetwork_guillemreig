@@ -312,6 +312,34 @@ app.post("/profile", (req, res) => {
     }
 });
 
+// SEARCH USER
+app.get("/users/:string", (req, res) => {
+    console.log("SEARCH USER. req.params.string :", req.params.string);
+
+    const searchArr = req.params.string.split(" ");
+    console.log("searchArr :", searchArr);
+
+    if (searchArr.length > 1) {
+        db.searchUserFullname(searchArr[0], searchArr[1] + "%")
+            .then((data) => {
+                console.log("data :", data);
+                res.json(data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    } else {
+        db.searchUser(searchArr[0] + "%")
+            .then((data) => {
+                console.log("data :", data);
+                res.json(data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+});
+
 app.get("*", function (req, res) {
     res.sendFile(path.join(__dirname, "..", "client", "index.html"));
 });

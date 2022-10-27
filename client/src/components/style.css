@@ -297,6 +297,7 @@ input {
     flex-direction: column;
     padding: 0;
     border: none;
+    max-width: 240px;
 }
 
 /* ANIMATIONS */

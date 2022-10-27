@@ -27,7 +27,7 @@ function createUser(firstName, lastName, email, password) {
         RETURNING *
         ;`;
     return db
-        .query(sql, [firstName, lastName, email, password]) // correct way to add data to sql
+        .query(sql, [firstName, lastName, email, password])
         .then((result) => result.rows)
         .catch((error) => console.log("Error in createUser:", error));
 }
@@ -88,7 +88,7 @@ function resetPassword(email, password) {
     WHERE email = $1
     ;`;
     return db
-        .query(sql, [email, password]) // correct way to add data to sql
+        .query(sql, [email, password])
         .then((result) => result.rows)
         .catch((error) => console.log("Error in resetPassword:", error));
 }
@@ -114,9 +114,38 @@ function updateProfile(id, first_name, last_name, email, bio) {
     RETURNING id, first_name, last_name, email, bio, created_at
     ;`;
     return db
-        .query(sql, [id, first_name, last_name, email, bio]) // correct way to add data to sql
+        .query(sql, [id, first_name, last_name, email, bio])
         .then((result) => result.rows)
         .catch((error) => console.log("Error in updateProfile:", error));
+}
+
+// SEARCH USER
+function searchUser(name) {
+    const sql = `
+    SELECT *
+    FROM users
+    WHERE first_name ILIKE $1
+    OR last_name ILIKE $1
+    ORDER BY first_name ASC
+    ;`;
+    return db
+        .query(sql, [name])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in searchUser:", error));
+}
+
+function searchUserFullname(firstName, lastName) {
+    const sql = `
+    SELECT *
+    FROM users
+    WHERE first_name ILIKE $1
+    AND last_name ILIKE $2
+    ORDER BY first_name ASC
+    ;`;
+    return db
+        .query(sql, [firstName, lastName])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in searchUserFullName:", error));
 }
 
 // EXPORTS
@@ -130,4 +159,6 @@ module.exports = {
     resetPassword,
     getProfile,
     updateProfile,
+    searchUser,
+    searchUserFullname,
 };

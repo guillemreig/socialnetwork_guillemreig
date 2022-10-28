@@ -1,0 +1,22 @@
+/* HOME */
+#Home {
+    width: 100vw;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.backgroundHome {
+    width: 105vw;
+    height: 100vh;
+
+    background-image: url(https://media.moddb.com/images/games/1/48/47046/FC_Primal_Twitter_Tweet_3.jpg);
+    background-position: fixed;
+    background-size: 105% 100vh;
+
+    animation: panning 30s infinite ease-in-out;
+
+    position: fixed;
+
+    z-index: -1;
+}

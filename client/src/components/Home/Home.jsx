@@ -1,11 +1,14 @@
+import "./home.css";
 import { Component } from "react";
+import { BrowserRouter, Route } from "react-router-dom";
 
 // import { BrowserRouter, Route } from "react-router-dom";
 
 // import NewGame from "./NewGame.jsx";
-import Profile from "./Profile.jsx";
+import Profile from "./subcomponents/Profile.jsx";
 // import Uploader from "./Profile.jsx";
-import SearchUser from "./SearchUser.jsx";
+import SearchUser from "./subcomponents/SearchUser.jsx";
+import OtherUser from "./subcomponents/OtherUser.jsx";
 
 export default class Home extends Component {
     constructor() {
@@ -72,6 +75,7 @@ export default class Home extends Component {
     render() {
         return (
             <div id="Home">
+                <div className="backgroundHome"></div>
                 <header>
                     <div className="logMenu">
                         <img
@@ -92,7 +96,7 @@ export default class Home extends Component {
                     </div>
                     <div className="logMenu">
                         <img
-                            src="logout.png"
+                            src="/logout.png"
                             id="headerIcon"
                             alt="exit"
                             onClick={this.logOut}
@@ -102,8 +106,6 @@ export default class Home extends Component {
                         </h3>
                     </div>
                 </header>
-
-                {/* <NewGame /> */}
                 {this.state.profileMenu && (
                     <Profile
                         user={this.state.user}
@@ -112,8 +114,19 @@ export default class Home extends Component {
                     />
                 )}
 
-                {/* {this.isPopupOpen && <Uploader />} */}
+                <BrowserRouter>
+                    <Route exact path="/">
+                        <h1>THIS REPRESENTS THE USER PAGE</h1>
+                    </Route>
+                    <Route path="/user/:id">
+                        <OtherUser />
+                    </Route>
+                </BrowserRouter>
             </div>
         );
     }
 }
+
+// 1. APP mounts: fetch user data from db using req.session.id and puts it in the APP user state
+
+// 2. APP gives Profile the user state as 'props'

@@ -1,6 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+// Variables
+const namesRegex = /^[a-z ,.'-]+$/i;
+const emailRegex =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
 export default class Registration extends React.Component {
     constructor() {
         super();
@@ -24,33 +29,50 @@ export default class Registration extends React.Component {
         e.preventDefault();
         console.log("submitForm(). this.state:", this.state);
 
-        fetch("/registration", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(this.state),
-        })
-            .then((res) => {
-                return res.json();
+        if (
+            // Check if empty fields
+            !this.state.firstName ||
+            !this.state.lastName ||
+            !this.state.email ||
+            !this.state.password
+        ) {
+            this.setState({ message: "Missing fields!" });
+        } else if (
+            // Check if valid input format
+            !this.state.email.match(emailRegex) ||
+            !this.state.firstName.match(namesRegex) ||
+            !this.state.lastName.match(namesRegex)
+        ) {
+            this.setState({ message: "Invalid input format!" });
+        } else {
+            fetch("/registration", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(this.state),
             })
-            .then((data) => {
-                console.log("data :", data);
-                if (data.success) {
-                    location.reload();
-                } else {
-                    this.setState({ message: data.message });
-                    throw new Error("REGISTRATION FAILED");
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+                .then((res) => {
+                    return res.json();
+                })
+                .then((data) => {
+                    console.log("data :", data);
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        this.setState({ message: data.message });
+                        throw new Error("REGISTRATION FAILED");
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     }
 
     render() {
         return (
-            <div className="formMenu">
+            <div className="window">
                 <h2>Registration</h2>
                 <p>
                     Already a member?: <Link to="/">Log in</Link>
@@ -81,7 +103,7 @@ export default class Registration extends React.Component {
                         placeholder="Password"
                         onChange={this.inputChange}
                     />
-                    <button onClick={this.submitForm}>Submit</button>
+                    <button onClick={this.submitForm}>Sign up</button>
                 </form>
             </div>
         );

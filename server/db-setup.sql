@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS requests;
 DROP TABLE IF EXISTS codes;
 DROP TABLE IF EXISTS users;
 
@@ -19,11 +20,12 @@ CREATE TABLE codes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- CREATE TABLE characters (
---     id SERIAL PRIMARY KEY,
---     user_id VARCHAR NOT NULL UNIQUE REFERENCES users (id),
---     picture VARCHAR,
---     bio VARCHAR
--- );
+CREATE TABLE requests (
+    id SERIAL PRIMARY KEY,
+    sender_id INTEGER NOT NULL REFERENCES users (id),
+    receiver_id INTEGER NOT NULL REFERENCES users (id),
+    accepted BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 

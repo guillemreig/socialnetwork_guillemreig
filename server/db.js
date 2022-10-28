@@ -119,6 +119,18 @@ function updateProfile(id, first_name, last_name, email, bio) {
         .catch((error) => console.log("Error in updateProfile:", error));
 }
 
+function updateProfileAndPic(id, first_name, last_name, email, bio, picture) {
+    const sql = `
+    UPDATE users SET first_name = $2, last_name = $3, email = $4, bio = $5, picture = $6
+    WHERE id = $1
+    RETURNING id, first_name, last_name, email, bio, picture, created_at
+    ;`;
+    return db
+        .query(sql, [id, first_name, last_name, email, bio, picture])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in updateProfile:", error));
+}
+
 // SEARCH USER
 function searchUser(name) {
     const sql = `
@@ -148,6 +160,26 @@ function searchUserFullname(firstName, lastName) {
         .catch((error) => console.log("Error in searchUserFullName:", error));
 }
 
+// FRIENDSHIP
+// getFriendship (finds friendship status between two people)
+function getFriendshipStatus(user1, user2) {
+    const sql = `SELECT * FROM requests
+    WHERE sender_id = $1 AND receiver_id = $2
+    OR
+    WHERE sender_id = $2 AND receiver_id = $1
+    `;
+    return db
+        .query(sql, [user1, user2])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in checkFriendship:", error));
+}
+
+// askFriendship (create a friendship request)
+
+// acceptFriendship (changes friendship status to accepted)
+
+// deleteFriendshipm(removes friendship row)
+
 // EXPORTS
 module.exports = {
     checkEmail,
@@ -159,6 +191,7 @@ module.exports = {
     resetPassword,
     getProfile,
     updateProfile,
+    updateProfileAndPic,
     searchUser,
     searchUserFullname,
 };

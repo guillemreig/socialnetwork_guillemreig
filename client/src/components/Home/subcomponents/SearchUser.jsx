@@ -1,6 +1,10 @@
 import { useState } from "react";
 
 import SearchUserResultList from "./SearchUserResultList.jsx";
+// import useStatefulFields from "../hooks/use-stateful-fields.js";
+// import useAuthSubmit from "../hooks/use-auth-submit.js";
+
+// import
 
 let timer; // Stored in the global scope so it survives
 
@@ -8,6 +12,21 @@ function SearchUser() {
     const [searchString, setSearchString] = useState("");
     const [resultList, setResultList] = useState(false);
     const [users, setUsers] = useState([]);
+
+    ///// STATE IN FUNCTION COMPONENT (classnotes) /////
+    // const [values, handleChange] = useStatefulFields(); // values is an object, like the 'state' of a 'class' type component
+
+    // function changeState(e) {
+    //     setValues({
+    //         ...values,
+    //         [e.target.name]: e.target.value,
+    //     }); // Keeps all the other properties of the 'values' state but changes the target one
+    // }
+
+    // changeState; // prevents error
+
+    // const [error, onFormSubmit] = useAuthSubmit("/login", values);
+    /// END OF CLASSNOTES /////
 
     // const fakeUsers = [
     //     { first_name: "Bob", last_name: "Dylan" },

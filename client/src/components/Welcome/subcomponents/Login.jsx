@@ -1,6 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+// Variables
+const emailRegex =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
 export default class Login extends React.Component {
     constructor() {
         super();
@@ -21,33 +25,46 @@ export default class Login extends React.Component {
         e.preventDefault();
         console.log("submitForm(). this.state:", this.state);
 
-        fetch("/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(this.state),
-        })
-            .then((res) => {
-                return res.json();
+        if (
+            // Check if empty fields
+            !this.state.email ||
+            !this.state.password
+        ) {
+            this.setState({ message: "Missing fields!" });
+        } else if (
+            // Check if valid input format
+            !this.state.email.match(emailRegex)
+        ) {
+            this.setState({ message: "Invalid input format!" });
+        } else {
+            fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(this.state),
             })
-            .then((data) => {
-                console.log("data :", data);
-                if (data.success) {
-                    location.reload();
-                } else {
-                    this.setState({ message: data.message });
-                    throw new Error("LOG IN FAILED");
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+                .then((res) => {
+                    return res.json();
+                })
+                .then((data) => {
+                    console.log("data :", data);
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        this.setState({ message: data.message });
+                        throw new Error("LOG IN FAILED");
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     }
 
     render() {
         return (
-            <div className="formMenu">
+            <div className="window">
                 <h2>Log in</h2>
                 <p>
                     Not a member?: <Link to="/signup">Sign up</Link>
@@ -63,10 +80,10 @@ export default class Login extends React.Component {
                     <input
                         type="password"
                         name="password"
-                        placeholder="Password"
+                        placeholder="password"
                         onChange={this.inputChange}
                     />
-                    <button onClick={this.submitForm}>Submit</button>
+                    <button onClick={this.submitForm}>Log in</button>
                 </form>
                 <Link to="/password">I forgot my password</Link>
             </div>

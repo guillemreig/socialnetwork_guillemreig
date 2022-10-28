@@ -1,6 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+// Variables
+const emailRegex =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
 export default class Login extends React.Component {
     constructor() {
         super();
@@ -24,61 +28,84 @@ export default class Login extends React.Component {
         e.preventDefault();
         console.log("submitForm(). this.state:", this.state);
 
-        fetch("/getcode", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(this.state),
-        })
-            .then((res) => {
-                return res.json();
+        if (
+            // Check if empty fields
+            !this.state.email
+        ) {
+            this.setState({ message: "Missing fields!" });
+        } else if (
+            // Check if valid input format
+            !this.state.email.match(emailRegex)
+        ) {
+            this.setState({ message: "Invalid input format!" });
+        } else {
+            fetch("/getcode", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(this.state),
             })
-            .then((data) => {
-                console.log("data :", data);
-                if (data.success) {
-                    this.setState({ message: "", stage: "code" });
-                } else {
-                    this.setState({ message: data.message });
-                    throw new Error("VERIFICATION FAILED");
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+                .then((res) => {
+                    return res.json();
+                })
+                .then((data) => {
+                    console.log("data :", data);
+                    if (data.success) {
+                        this.setState({ message: "", stage: "code" });
+                    } else {
+                        this.setState({ message: data.message });
+                        throw new Error("VERIFICATION FAILED");
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     }
 
     submitCode(e) {
         e.preventDefault();
         console.log("submitCode(). this.state:", this.state);
 
-        fetch("/resetpassword", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(this.state),
-        })
-            .then((res) => {
-                return res.json();
+        if (
+            // Check if empty fields
+            !this.state.code ||
+            !this.state.password
+        ) {
+            this.setState({ message: "Missing fields!" });
+        } else {
+            fetch("/resetpassword", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(this.state),
             })
-            .then((data) => {
-                console.log("data :", data);
-                if (data.success) {
-                    this.setState({ message: "", stage: "done" });
-                } else {
-                    this.setState({ message: data.message, stage: "email" });
-                    throw new Error("PASSWORD RESET FAILED");
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+                .then((res) => {
+                    return res.json();
+                })
+                .then((data) => {
+                    console.log("data :", data);
+                    if (data.success) {
+                        this.setState({ message: "", stage: "done" });
+                    } else {
+                        this.setState({
+                            message: data.message,
+                            stage: "email",
+                        });
+                        throw new Error("PASSWORD RESET FAILED");
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     }
 
     render() {
         return (
-            <div className="formMenu">
+            <div className="window">
                 <h2>Password Reset</h2>
                 {this.state.stage == "email" && (
                     <>

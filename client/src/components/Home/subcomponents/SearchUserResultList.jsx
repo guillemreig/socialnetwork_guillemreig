@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function FindUserResultList({ users }) {
     return (
-        <div id="resultList" className="formMenu">
+        <div id="resultList">
             {users.map((user) => (
                 <div key={user.first_name}>
                     <Link to={`/user/${user.id}`}>

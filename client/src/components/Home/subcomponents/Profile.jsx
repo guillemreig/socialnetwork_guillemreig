@@ -120,7 +120,7 @@ export default class Profile extends Component {
         return (
             <div className="overlay">
                 <div className="window">
-                    <div id="cardDiv">
+                    <div id="profileDiv">
                         <div>
                             {!this.state.editMode && (
                                 <>
@@ -206,7 +206,7 @@ export default class Profile extends Component {
                             </div>
                             <h3>Bio</h3>
                             {!this.state.editMode && (
-                                <p id="bio">{this.props.user.bio}</p>
+                                <p>{this.props.user.bio}</p>
                             )}
 
                             {this.state.editMode && (
@@ -248,19 +248,3 @@ export default class Profile extends Component {
         );
     }
 }
-
-// export default function Profile({
-//     first_name,
-//     last_name,
-//     email,
-//     picture,
-//     bio,
-//     toggleProfile,
-// }) {
-//     return (
-//         <div>
-//             <h1>TEST TEXT</h1>
-//             <button onClick={this.toggleProfile}></button>
-//         </div>
-//     );
-// }

@@ -1,16 +1,38 @@
-// import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
 
 function OtherUser() {
-    // const [otherUser, setOtherUser] = useState();
-
-    const fakeUser = {
-        id: 0,
-        first_name: "Test",
-        last_name: "Tester",
-        email: "fake@email.com",
-        bio: "This is a fake bio used for testing purposes.",
+    const [otherUser, setOtherUser] = useState({
+        first_name: "",
+        last_name: "",
+        email: "",
         picture: "",
-    };
+        bio: "",
+        created_at: "",
+    });
+    const { id } = useParams();
+
+    console.log("id:", id);
+
+    useEffect(() => {
+        console.log("OtherUserPage useEffect(id)");
+
+        fetch(`/user/${id}.json`)
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                !data.bio && (data.bio = "");
+
+                // add it to the state
+                setOtherUser(data);
+
+                console.log("otherUser :", otherUser);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, []);
 
     ///// STATE IN FUNCTION COMPONENT (classnotes) /////
     // const [values, handleChange] = useStatefulFields(); // values is an object, like the 'state' of a 'class' type component
@@ -43,16 +65,16 @@ function OtherUser() {
                 <div className="userCard">
                     <img
                         id="picture"
-                        src={fakeUser.picture || "/default_user.jpg"}
+                        src={otherUser.picture || "/default_user.jpg"}
                         alt=""
                     />
                     <div id="userInfo">
                         <h2>
-                            {fakeUser.first_name} {fakeUser.last_name}
+                            {otherUser.first_name} {otherUser.last_name}
                         </h2>
-                        <h4>{fakeUser.email}</h4>
-                        <h4>{fakeUser.created_at}</h4>
-                        <p>{fakeUser.bio}</p>
+                        <h4>{otherUser.email}</h4>
+                        <h4>{otherUser.created_at}</h4>
+                        <p>{otherUser.bio}</p>
                         <div className="centeredFlex">
                             <button>Befriend</button>
                         </div>

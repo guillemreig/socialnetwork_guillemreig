@@ -2,13 +2,9 @@ import "./home.css";
 import { Component } from "react";
 import { BrowserRouter, Route } from "react-router-dom";
 
-// import { BrowserRouter, Route } from "react-router-dom";
-
-// import NewGame from "./NewGame.jsx";
 import Profile from "./subcomponents/Profile.jsx";
-// import Uploader from "./Profile.jsx";
 import SearchUser from "./subcomponents/SearchUser.jsx";
-import OtherUser from "./subcomponents/OtherUser.jsx";
+import OtherUser from "./subcomponents/OtherUserPage.jsx";
 
 export default class Home extends Component {
     constructor() {
@@ -20,6 +16,7 @@ export default class Home extends Component {
                 email: "",
                 picture: "",
                 bio: "",
+                created_at: "",
             },
             profileMenu: false,
         };
@@ -55,7 +52,7 @@ export default class Home extends Component {
     componentDidMount() {
         console.log("componentDidMount()");
         // fetch user info from server
-        fetch("/user")
+        fetch("/user/0.json")
             .then((res) => {
                 return res.json();
             })
@@ -91,8 +88,7 @@ export default class Home extends Component {
                     </div>
                     <SearchUser />
                     <div>
-                        <h1 id="miniLogo">TRIBE</h1>
-                        <h1 id="miniLogoShadow">TRIBE</h1>
+                        <h1 id="miniLogo">TRIBES</h1>
                     </div>
                     <div className="logMenu">
                         <img

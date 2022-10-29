@@ -49,6 +49,7 @@ app.use(express.static(path.join(__dirname, "..", "client", "public")));
 app.use(express.json()); // This is needed to read the req.body
 
 // ROUTES
+// Get user id from cookie
 app.get("/user/id.json", (req, res) => {
     console.log("req.session :", req.session);
 
@@ -153,11 +154,17 @@ app.post("/login", (req, res) => {
         });
 });
 
-// get own user data
-app.get("/user", (req, res) => {
-    console.log("GET USER. req.session.id :", req.session.id);
+// get user data (own or other)
+app.get("/user/:id.json", (req, res) => {
+    console.log("GET USER. id :", req.params.id);
 
-    db.getUserById(req.session.id)
+    let id = req.params.id;
+    // if 'id' is 0 the request comes from own Home page and wants own user data
+    if (id == 0) {
+        id = req.session.id;
+    }
+    // if 'id' is another number, it comes from OtherUserPage and wants somoene else's data
+    db.getUserById(id)
         .then((data) => {
             console.log("data :", data);
             delete data[0].password; // caution!
@@ -309,11 +316,11 @@ app.post("/profile", uploader.single("file"), (req, res) => {
                 console.log("picture url :", picture);
 
                 // DELETE IMAGE FROM LOCAL STORAGE
-                fs.unlink(path, function (err) {
+                fs.unlink(req.file.path, function (err) {
                     if (err) {
                         console.error("Error in fs.unlink:", err);
                     } else {
-                        console.log("File removed!", path);
+                        console.log("File removed!", req.file.path);
                     }
                 });
 

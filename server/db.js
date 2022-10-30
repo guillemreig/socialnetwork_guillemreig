@@ -161,20 +161,68 @@ function searchUserFullname(firstName, lastName) {
 }
 
 // FRIENDSHIP
-// getFriendship (finds friendship status between two people)
+// finds friendship status between two people
 function getFriendshipStatus(user1, user2) {
-    const sql = `SELECT * FROM requests
-    WHERE sender_id = $1 AND receiver_id = $2
-    OR
-    WHERE sender_id = $2 AND receiver_id = $1
+    const sql = `
+    SELECT *
+    FROM requests
+    WHERE (sender_id = $1 AND receiver_id = $2)
+    OR (sender_id = $2 AND receiver_id = $1)
+    ORDER BY created_at DESC
+    LIMIT 1
     `;
     return db
         .query(sql, [user1, user2])
         .then((result) => result.rows)
-        .catch((error) => console.log("Error in checkFriendship:", error));
+        .catch((error) => console.log("Error in getFriendshipStatus:", error));
 }
 
-// askFriendship (create a friendship request)
+// creates a friendship request to database
+function askFriendship(user1, user2) {
+    const sql = `
+    INSERT INTO requests (sender_id, receiver_id)
+    VALUES ($1, $2)
+    RETURNING status
+    ;`;
+    return db
+        .query(sql, [user1, user2])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in askFriendship:", error));
+}
+
+// cancel friendship request
+function cancelFriendshipRequest(user1, user2) {
+    const sql = `
+    UPDATE requests
+    SET status = NULL
+    WHERE (sender_id = $1 AND receiver_id = $2)
+    OR (sender_id = $2 AND receiver_id = $1)
+    RETURNING status
+    ;`;
+    return db
+        .query(sql, [user1, user2])
+        .then((result) => result.rows)
+        .catch((error) =>
+            console.log("Error in cancelFriendshipRequest:", error)
+        );
+}
+
+// accept friendship request
+function acceptFriendshipRequest(user1, user2) {
+    const sql = `
+    UPDATE requests
+    SET status = true
+    WHERE (sender_id = $1 AND receiver_id = $2 AND status = false)
+    OR (sender_id = $2 AND receiver_id = $1 AND status = false)
+    RETURNING status
+    ;`;
+    return db
+        .query(sql, [user1, user2])
+        .then((result) => result.rows)
+        .catch((error) =>
+            console.log("Error in acceptFriendshipRequest:", error)
+        );
+}
 
 // acceptFriendship (changes friendship status to accepted)
 
@@ -194,4 +242,8 @@ module.exports = {
     updateProfileAndPic,
     searchUser,
     searchUserFullname,
+    getFriendshipStatus,
+    askFriendship,
+    cancelFriendshipRequest,
+    acceptFriendshipRequest,
 };

@@ -64,6 +64,29 @@ app.get("/user/id.json", (req, res) => {
     }
 });
 
+// get user data (own or other)
+app.get("/user/:id.json", (req, res) => {
+    console.log("GET USER. id :", req.params.id);
+
+    let id = req.params.id;
+    // if 'id' is 0 the request comes from own Home page and wants own user data
+    if (id == 0) {
+        id = req.session.id;
+    }
+    // if 'id' is another number, it comes from OtherUserPage and wants somoene else's data
+    db.getUserById(id)
+        .then((data) => {
+            console.log("data :", data);
+            delete data[0].password; // caution!
+            data[0].created_at = data[0].created_at.toString().split(" GMT")[0];
+
+            res.json(data[0]);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+});
+
 // Registration
 app.post("/registration", (req, res) => {
     console.log("REGISTRATION. req.body :", req.body);
@@ -150,29 +173,6 @@ app.post("/login", (req, res) => {
                 success: false,
                 message: "Error logging in!",
             });
-            console.log(error);
-        });
-});
-
-// get user data (own or other)
-app.get("/user/:id.json", (req, res) => {
-    console.log("GET USER. id :", req.params.id);
-
-    let id = req.params.id;
-    // if 'id' is 0 the request comes from own Home page and wants own user data
-    if (id == 0) {
-        id = req.session.id;
-    }
-    // if 'id' is another number, it comes from OtherUserPage and wants somoene else's data
-    db.getUserById(id)
-        .then((data) => {
-            console.log("data :", data);
-            delete data[0].password; // caution!
-            data[0].created_at = data[0].created_at.toString().split(" GMT")[0];
-
-            res.json(data[0]);
-        })
-        .catch((error) => {
             console.log(error);
         });
 });
@@ -381,6 +381,103 @@ app.get("/users/:string", (req, res) => {
 });
 
 // FRIENDSHIP
+// FRIEND BUTTON
+// get user friend status
+app.get("/status/:id.json", (req, res) => {
+    console.log("GET USER STATUS. id1, id2 :", req.session.id, req.params.id);
+
+    const id1 = req.session.id;
+    const id2 = req.params.id;
+
+    if (id1 == id2) {
+        // It's the same user
+        res.json({
+            status: "self",
+        });
+    } else {
+        db.getFriendshipStatus(id1, id2)
+            .then((data) => {
+                console.log("data :", data);
+
+                if (data[0]) {
+                    data[0].created_at = data[0].created_at
+                        .toString()
+                        .split(" GMT")[0];
+                }
+
+                res.json(data[0]);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+});
+
+// make friendship request
+app.get("/befriend/:id.json", (req, res) => {
+    console.log("BEFRIEND. id1, id2 :", req.session.id, req.params.id);
+
+    const id1 = req.session.id;
+    const id2 = req.params.id;
+
+    if (id1 == id2) {
+        res.redirect("/");
+    }
+
+    db.askFriendship(id1, id2)
+        .then((data) => {
+            console.log("data :", data);
+
+            res.json(data[0]);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+});
+
+// cancel friendship request
+app.get("/cancel/:id.json", (req, res) => {
+    console.log("CANCEL. id1, id2 :", req.session.id, req.params.id);
+
+    const id1 = req.session.id;
+    const id2 = req.params.id;
+
+    if (id1 == id2) {
+        res.redirect("/");
+    }
+
+    db.cancelFriendshipRequest(id1, id2)
+        .then((data) => {
+            console.log("data :", data);
+
+            res.json({ success: true });
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+});
+
+// accept friendship request
+app.get("/accept/:id.json", (req, res) => {
+    console.log("ACCEPT. id1, id2 :", req.session.id, req.params.id);
+
+    const id1 = req.session.id;
+    const id2 = req.params.id;
+
+    if (id1 == id2) {
+        res.redirect("/");
+    }
+
+    db.acceptFriendshipRequest(id1, id2)
+        .then((data) => {
+            console.log("data :", data);
+
+            res.json({ success: true });
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+});
 
 app.get("/friendship/:id");
 

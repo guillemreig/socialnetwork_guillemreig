@@ -50,7 +50,7 @@ export default class Home extends Component {
     }
 
     componentDidMount() {
-        console.log("componentDidMount()");
+        console.log("Home componentDidMount()");
         // fetch user info from server
         fetch("/user/0.json")
             .then((res) => {

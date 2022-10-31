@@ -50,7 +50,7 @@ header {
     margin: 10px 26px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
 }
 
 #headerUserPicture {
@@ -143,4 +143,10 @@ header {
     width: 100%;
     padding: 20px;
     /* background-color: silver; */
+}
+
+/* TIMELINE */
+
+.timeline {
+    margin-top: 70px;
 }

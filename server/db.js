@@ -190,7 +190,7 @@ function askFriendship(user1, user2) {
         .catch((error) => console.log("Error in askFriendship:", error));
 }
 
-// cancel friendship request
+// cancel friendship request and unfriend
 function cancelFriendshipRequest(user1, user2) {
     const sql = `
     UPDATE requests
@@ -223,10 +223,6 @@ function acceptFriendshipRequest(user1, user2) {
             console.log("Error in acceptFriendshipRequest:", error)
         );
 }
-
-// acceptFriendship (changes friendship status to accepted)
-
-// deleteFriendshipm(removes friendship row)
 
 // EXPORTS
 module.exports = {

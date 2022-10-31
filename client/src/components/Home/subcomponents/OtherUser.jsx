@@ -14,7 +14,7 @@ function OtherUser() {
     });
 
     useEffect(() => {
-        console.log("OtherUserPage useEffect(id)");
+        console.log("OtherUserPage useEffect(id)", id);
 
         fetch(`/user/${id}.json`)
             .then((res) => {
@@ -25,38 +25,11 @@ function OtherUser() {
 
                 // add it to the state
                 setOtherUser(data);
-
-                console.log("otherUser :", otherUser);
             })
             .catch((error) => {
                 console.log(error);
             });
-    }, []);
-
-    ///// STATE IN FUNCTION COMPONENT (classnotes) /////
-    // const [values, handleChange] = useStatefulFields(); // values is an object, like the 'state' of a 'class' type component
-
-    // function changeState(e) {
-    //     setValues({
-    //         ...values,
-    //         [e.target.name]: e.target.value,
-    //     }); // Keeps all the other properties of the 'values' state but changes the target one
-    // }
-
-    // changeState; // prevents error
-
-    // const [error, onFormSubmit] = useAuthSubmit("/login", values);
-    /// END OF CLASSNOTES /////
-
-    // const fakeUsers = [
-    //     { first_name: "Bob", last_name: "Dylan" },
-    //     { first_name: "Jeb", last_name: "Kerman", picture: "default_user.jpg" },
-    //     { first_name: "Alice", last_name: "Wond", picture: "default_user.jpg" },
-    // ]; // Fake user list
-
-    // function useEffect() {
-    //     console.log("OtherUser mounted!");
-    // }
+    }, [id]);
 
     return (
         <div className="userPage">
@@ -80,7 +53,9 @@ function OtherUser() {
                     </div>
                 </div>
             </div>
-            <div className="timeline"></div>
+            <div className="timeline">
+                <h1>OTHER USER COMPONENT</h1>
+            </div>
         </div>
     );
 }
@@ -93,16 +68,16 @@ function FriendButton(props) {
     const { id } = props;
 
     useEffect(() => {
-        console.log("FriendButton useEffect(). id: ", id);
-
+        console.log("FriendButton useEffect(id):", id);
         fetch(`/status/${id}.json`)
             .then((res) => {
                 return res.json();
             })
             .then((data) => {
-                console.log("FriendButton data:", data);
                 // add it to the state
-                if (data.status == "self") {
+                if (data.status == null) {
+                    setOtherUserStatus("befriend");
+                } else if (data.status == "self") {
                     setOtherUserStatus("hidden");
                 } else if (data.status == false) {
                     data.receiver_id == id
@@ -115,7 +90,7 @@ function FriendButton(props) {
             .catch((error) => {
                 console.log(error);
             });
-    }, []);
+    }, [id]);
 
     function sendFriendRequest() {
         console.log("sendFriendRequest. id:", id);
@@ -177,7 +152,7 @@ function FriendButton(props) {
     function unfriendRequest() {
         console.log("unfriendRequest. id:", id);
 
-        fetch(`/unfriend/${id}.json`)
+        fetch(`/cancel/${id}.json`)
             .then((res) => {
                 return res.json();
             })
@@ -185,7 +160,7 @@ function FriendButton(props) {
                 console.log("unfriendRequest data:", data);
 
                 if (data.success == true) {
-                    setOtherUserStatus("none");
+                    setOtherUserStatus("befriend");
                 }
             })
             .catch((error) => {
@@ -196,24 +171,23 @@ function FriendButton(props) {
     return (
         <>
             {otherUserStatus == "befriend" && (
-                <button onClick={sendFriendRequest}>
-                    Befriend ({otherUserStatus})
-                </button>
+                <button onClick={sendFriendRequest}>Befriend</button>
             )}
             {otherUserStatus == "cancel" && (
-                <button onClick={cancelFriendRequest}>
-                    Cancel Request ({otherUserStatus})
-                </button>
+                <button onClick={cancelFriendRequest}>Cancel Request</button>
             )}
             {otherUserStatus == "accept" && (
-                <button onClick={acceptFriendRequest}>
-                    Accept Request ({otherUserStatus})
-                </button>
+                <div id="userInfo">
+                    <button onClick={acceptFriendRequest}>
+                        Accept Request
+                    </button>
+                    <button onClick={cancelFriendRequest}>
+                        Cancel Request
+                    </button>
+                </div>
             )}
             {otherUserStatus == "unfriend" && (
-                <button onClick={unfriendRequest}>
-                    Unfriend ({otherUserStatus})
-                </button>
+                <button onClick={unfriendRequest}>Unfriend</button>
             )}
         </>
     );

@@ -1,10 +1,6 @@
 import { useState } from "react";
 
 import SearchUserResultList from "./SearchUserResultList.jsx";
-// import useStatefulFields from "../hooks/use-stateful-fields.js";
-// import useAuthSubmit from "../hooks/use-auth-submit.js";
-
-// import
 
 let timer; // Stored in the global scope so it survives
 
@@ -13,63 +9,16 @@ function SearchUser() {
     const [resultList, setResultList] = useState(false);
     const [users, setUsers] = useState([]);
 
-    ///// STATE IN FUNCTION COMPONENT (classnotes) /////
-    // const [values, handleChange] = useStatefulFields(); // values is an object, like the 'state' of a 'class' type component
-
-    // function changeState(e) {
-    //     setValues({
-    //         ...values,
-    //         [e.target.name]: e.target.value,
-    //     }); // Keeps all the other properties of the 'values' state but changes the target one
-    // }
-
-    // changeState; // prevents error
-
-    // const [error, onFormSubmit] = useAuthSubmit("/login", values);
-    /// END OF CLASSNOTES /////
-
-    // const fakeUsers = [
-    //     { first_name: "Bob", last_name: "Dylan" },
-    //     { first_name: "Jeb", last_name: "Kerman", picture: "default_user.jpg" },
-    //     { first_name: "Alice", last_name: "Wond", picture: "default_user.jpg" },
-    // ]; // Fake user list
-
-    function getUsers(searchString) {
-        if (searchString === "") {
-            return [];
-        } else {
-            return users.filter((user) => {
-                const searchArr = searchString.split(" ");
-                console.log("searchArr :", searchArr);
-
-                if (searchArr.length > 1) {
-                    return (
-                        user.first_name
-                            .toLowerCase()
-                            .startsWith(searchArr[0].toLowerCase()) &&
-                        user.last_name
-                            .toLowerCase()
-                            .startsWith(searchArr[1].toLowerCase())
-                    );
-                } else {
-                    return (
-                        user.first_name
-                            .toLowerCase()
-                            .startsWith(searchArr[0].toLowerCase()) ||
-                        user.last_name
-                            .toLowerCase()
-                            .startsWith(searchArr[0].toLowerCase())
-                    );
-                }
-            });
-        }
-    }
-
     function inputChange(e) {
-        console.log("inputChange(e)");
-        console.log(e.target.value);
+        console.log("inputChange(e) :", e.target.value);
 
         setSearchString(e.target.value);
+
+        if (e.target.value == "") {
+            console.log("here!");
+            setUsers([]);
+            return;
+        }
 
         clearTimeout(timer);
 
@@ -99,59 +48,15 @@ function SearchUser() {
                 value={searchString}
                 onChange={inputChange}
                 onFocus={() => setResultList(true)}
-                // onBlur={() => setResultList(false)}
             />
             {resultList && (
-                <SearchUserResultList users={getUsers(searchString)} />
+                <SearchUserResultList
+                    users={users}
+                    setResultList={setResultList}
+                />
             )}
         </div>
     );
 }
 
 export default SearchUser;
-
-// function SearchUser({ defaultInput }) {
-//     const [searchString, setSearchInput] = useState(defaultInput);
-//     // const [showText, setShowText] = useState(true);
-//     const [user, setUser] = useState({
-//         name: "Sven",
-//         isLoggedIn: true,
-//         userGroup: "user",
-//     });
-
-//     function updateInput(e) {
-//         setSearchInput(e.target.value);
-//     }
-
-//     useEffect(() => {
-//         console.log("useEffect(). Component mounted!");
-
-//         return () => {
-//             console.log("useEffect(). Component is unmounted!");
-//         };
-//     }, [user]); // Hook (runs when the component mounts)
-//     // adding [user] makes the function run every time the user is changed
-
-//     return (
-//         <>
-//             <input
-//                 className="input"
-//                 type="text"
-//                 name="search"
-//                 placeholder={searchString}
-//                 onChange={updateInput}
-//             />
-//             {/* <p>{showText ? "true" : "false"}</p> */}
-//             <p>
-//                 User:
-//                 {user.name}, {user.userGroup},{" "}
-//                 {user.isLoggedIn ? "true" : "false"}
-//             </p>
-//             <button onClick={() => setUser({ ...user, isLoggedIn: false })}>
-//                 setUser
-//             </button>
-//         </>
-//     );
-// }
-
-// export default SearchUser;

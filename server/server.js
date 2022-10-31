@@ -479,14 +479,6 @@ app.get("/accept/:id.json", (req, res) => {
         });
 });
 
-app.get("/friendship/:id");
-
-app.post("/friendship/:id");
-
-app.post("/friendship/accept/:id");
-
-app.post("/friendship/cancel/:id");
-
 // CATCH ALL
 
 app.get("*", function (req, res) {

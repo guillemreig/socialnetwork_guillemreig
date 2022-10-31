@@ -1,10 +1,11 @@
 import "./home.css";
 import { Component } from "react";
-import { BrowserRouter, Route } from "react-router-dom";
+import { Route } from "react-router-dom";
 
 import Profile from "./subcomponents/Profile.jsx";
 import SearchUser from "./subcomponents/SearchUser.jsx";
-import OtherUser from "./subcomponents/OtherUserPage.jsx";
+import UserPage from "./subcomponents/UserPage.jsx";
+import OtherUser from "./subcomponents/OtherUser.jsx";
 
 export default class Home extends Component {
     constructor() {
@@ -28,6 +29,7 @@ export default class Home extends Component {
     logOut() {
         console.log("logOut()");
         fetch("/logout");
+        history.pushState({}, "", `/`);
         location.reload();
     }
 
@@ -50,7 +52,6 @@ export default class Home extends Component {
     }
 
     componentDidMount() {
-        console.log("Home componentDidMount()");
         // fetch user info from server
         fetch("/user/0.json")
             .then((res) => {
@@ -61,8 +62,6 @@ export default class Home extends Component {
 
                 // add it to the state
                 this.setState({ user: data });
-
-                console.log("this.state.user :", this.state.user);
             })
             .catch((error) => {
                 console.log(error);
@@ -91,15 +90,17 @@ export default class Home extends Component {
                         <h1 id="miniLogo">TRIBES</h1>
                     </div>
                     <div className="logMenu">
+                        <h3 className="button">Friends</h3>
+                        <h3 className="button">Requests</h3>
+                        <h3 className="button" onClick={this.logOut}>
+                            Log out
+                        </h3>
                         <img
                             src="/logout.png"
                             id="headerIcon"
                             alt="exit"
                             onClick={this.logOut}
                         />
-                        <h3 className="button" onClick={this.logOut}>
-                            Log out
-                        </h3>
                     </div>
                 </header>
                 {this.state.profileMenu && (
@@ -109,15 +110,12 @@ export default class Home extends Component {
                         updateProfile={this.updateProfile}
                     />
                 )}
-
-                <BrowserRouter>
-                    <Route exact path="/">
-                        <h1>THIS REPRESENTS THE USER PAGE</h1>
-                    </Route>
-                    <Route path="/user/:id">
-                        <OtherUser />
-                    </Route>
-                </BrowserRouter>
+                <Route exact path="/">
+                    <UserPage user={this.state.user} />
+                </Route>
+                <Route path="/user/:id">
+                    <OtherUser />
+                </Route>
             </div>
         );
     }

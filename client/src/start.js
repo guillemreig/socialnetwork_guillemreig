@@ -6,9 +6,7 @@ import { BrowserRouter } from "react-router-dom";
 fetch("/user/id.json")
     .then((response) => response.json())
     .then((data) => {
-        console.log("/user/id.json data:", data);
         if (!data.id) {
-            console.log("START. user NOT loged in");
             ReactDOM.render(
                 <BrowserRouter>
                     <Welcome />
@@ -16,8 +14,6 @@ fetch("/user/id.json")
                 document.querySelector("main")
             );
         } else {
-            console.log("START. user loged in");
-            // The loged in page:
             ReactDOM.render(
                 <BrowserRouter>
                     <Home />

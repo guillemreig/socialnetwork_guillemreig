@@ -25,18 +25,77 @@
 }
 
 .backgroundWelcome {
-    width: 105vw;
+    width: 100vw;
     height: 100vh;
 
-    background-image: url(https://free4kwallpapers.com/uploads/originals/2016/04/05/prehistoric-stone-age--inspired-by-far-cry-primal-wallpaper.jpg);
+    /* background-image: url(https://free4kwallpapers.com/uploads/originals/2016/04/05/prehistoric-stone-age--inspired-by-far-cry-primal-wallpaper.jpg);
     background-position: fixed;
-    background-size: auto 105vh;
+    background-size: auto 105vh; */
 
-    animation: panning 30s infinite ease-in-out;
+    /* animation: panning 30s infinite ease-in-out; */
 
     position: fixed;
 
     z-index: -2;
+}
+
+.background {
+    height: 100%;
+    width: 100%;
+
+    background-repeat: no-repeat;
+
+    position: absolute;
+    top: 0;
+}
+
+#background5 {
+    background-image: url("primal5.png");
+
+    background-size: cover;
+    z-index: -6;
+
+    animation: panning5 30s infinite ease-in-out;
+}
+#background4 {
+    /* background-image: url("primal.png"); */
+
+    background-size: cover;
+
+    z-index: -5;
+
+    animation: panning4 30s infinite ease-in-out;
+}
+#background3 {
+    background-image: url("primal3.png");
+
+    background-size: cover;
+
+    z-index: -4;
+
+    animation: panning3 30s infinite ease-in-out;
+}
+#background2 {
+    background-image: url("primal2.png");
+
+    background-size: cover;
+
+    z-index: -3;
+
+    animation: panning2 30s infinite ease-in-out;
+}
+
+#background1 {
+    background-image: url("primal1.png");
+
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    position: absolute;
+    top: 0;
+    z-index: -2;
+
+    animation: panning1 30s infinite ease-in-out;
 }
 
 /* TRIBES */
@@ -113,4 +172,66 @@
 /* 'FREEDOM' */
 .titleTxt h2 {
     font-size: 50px;
+}
+
+/* ANIMATIONS */
+
+@keyframes panning1 {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: -80px 0%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+@keyframes panning2 {
+    0% {
+        background-position: 50px 0%;
+    }
+    50% {
+        background-position: 0px 0%;
+    }
+    100% {
+        background-position: 50px 0%;
+    }
+}
+
+@keyframes panning3 {
+    0% {
+        background-position: 0px 0%;
+    }
+    50% {
+        background-position: -20px 0%;
+    }
+    100% {
+        background-position: 0px 0%;
+    }
+}
+
+@keyframes panning4 {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: -20px 0%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+@keyframes panning5 {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: -10px 0%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
 }

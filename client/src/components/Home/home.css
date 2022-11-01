@@ -12,7 +12,9 @@
 
     background-image: url(https://media.moddb.com/images/games/1/48/47046/FC_Primal_Twitter_Tweet_3.jpg);
     background-position: fixed;
-    background-size: 105% 100vh;
+    /* background-size: 105% 100vh; */
+
+    background-size: cover;
 
     animation: panning 30s infinite ease-in-out;
 
@@ -149,4 +151,16 @@ header {
 
 .timeline {
     margin-top: 70px;
+}
+
+@keyframes panning {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: -70px 0%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
 }

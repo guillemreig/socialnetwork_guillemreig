@@ -8,7 +8,13 @@ import Password from "./subcomponents/Password.jsx";
 export default function Welcome() {
     return (
         <div id="Welcome">
-            <div className="backgroundWelcome"></div>
+            <div className="backgroundWelcome">
+                <div id="background5" className="background"></div>
+                <div className="background"></div>
+                <div id="background3" className="background"></div>
+                <div id="background2" className="background"></div>
+                <div id="background1" className="background"></div>
+            </div>
             <div className="titleTxt">
                 <div>
                     <h4 className="shadow">Welcome to</h4>

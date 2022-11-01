@@ -212,8 +212,7 @@ function acceptFriendshipRequest(user1, user2) {
     const sql = `
     UPDATE requests
     SET status = true
-    WHERE (sender_id = $1 AND receiver_id = $2 AND status = false)
-    OR (sender_id = $2 AND receiver_id = $1 AND status = false)
+    WHERE (sender_id = $2 AND receiver_id = $1 AND status = false)
     RETURNING status
     ;`;
     return db

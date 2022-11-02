@@ -6,6 +6,7 @@ import Profile from "./subcomponents/Profile.jsx";
 import SearchUser from "./subcomponents/SearchUser.jsx";
 import UserPage from "./subcomponents/UserPage.jsx";
 import OtherUser from "./subcomponents/OtherUser.jsx";
+import Canvas from "./subcomponents/Canvas.jsx";
 
 export default class Home extends Component {
     constructor() {
@@ -70,57 +71,59 @@ export default class Home extends Component {
 
     render() {
         return (
-            <div id="Home">
-                <div className="backgroundHome"></div>
-                <header>
-                    <div className="logMenu">
-                        <img
-                            src={this.state.user.picture || "default_user.jpg"}
-                            id="headerUserPicture"
-                            alt="user picture"
-                            onClick={this.toggleProfile}
+            <>
+                <div id="Home">
+                    <div className="backgroundHome"></div>
+                    <Canvas />
+                    <header>
+                        <div className="logMenu">
+                            <img
+                                src={
+                                    this.state.user.picture ||
+                                    "default_user.jpg"
+                                }
+                                id="headerUserPicture"
+                                alt="user picture"
+                                onClick={this.toggleProfile}
+                            />
+                            <h3 className="button" onClick={this.toggleProfile}>
+                                {this.state.user.first_name}{" "}
+                                {this.state.user.last_name}
+                            </h3>
+                        </div>
+                        <SearchUser />
+                        <div>
+                            <h1 id="miniLogo">TRIBES</h1>
+                        </div>
+                        <div className="logMenu">
+                            <h3 className="button">Friends</h3>
+                            <h3 className="button">Requests</h3>
+                            <h3 className="button" onClick={this.logOut}>
+                                Log out
+                            </h3>
+                            <img
+                                src="/logout.png"
+                                id="headerIcon"
+                                alt="exit"
+                                onClick={this.logOut}
+                            />
+                        </div>
+                    </header>
+                    {this.state.profileMenu && (
+                        <Profile
+                            user={this.state.user}
+                            toggleProfile={this.toggleProfile}
+                            updateProfile={this.updateProfile}
                         />
-                        <h3 className="button" onClick={this.toggleProfile}>
-                            {this.state.user.first_name}{" "}
-                            {this.state.user.last_name}
-                        </h3>
-                    </div>
-                    <SearchUser />
-                    <div>
-                        <h1 id="miniLogo">TRIBES</h1>
-                    </div>
-                    <div className="logMenu">
-                        <h3 className="button">Friends</h3>
-                        <h3 className="button">Requests</h3>
-                        <h3 className="button" onClick={this.logOut}>
-                            Log out
-                        </h3>
-                        <img
-                            src="/logout.png"
-                            id="headerIcon"
-                            alt="exit"
-                            onClick={this.logOut}
-                        />
-                    </div>
-                </header>
-                {this.state.profileMenu && (
-                    <Profile
-                        user={this.state.user}
-                        toggleProfile={this.toggleProfile}
-                        updateProfile={this.updateProfile}
-                    />
-                )}
-                <Route exact path="/">
-                    <UserPage user={this.state.user} />
-                </Route>
-                <Route path="/user/:id">
-                    <OtherUser />
-                </Route>
-            </div>
+                    )}
+                    <Route exact path="/">
+                        <UserPage user={this.state.user} />
+                    </Route>
+                    <Route path="/user/:id">
+                        <OtherUser />
+                    </Route>
+                </div>
+            </>
         );
     }
 }
-
-// 1. APP mounts: fetch user data from db using req.session.id and puts it in the APP user state
-
-// 2. APP gives Profile the user state as 'props'

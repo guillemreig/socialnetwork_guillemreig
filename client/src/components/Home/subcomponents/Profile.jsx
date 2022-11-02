@@ -238,11 +238,20 @@ export default class Profile extends Component {
                         </div>
                     </div>
 
-                    {!this.state.editMode && (
-                        <div className="centeredFlex">
-                            <button onClick={this.toggleEditMode}>Edit</button>
-                        </div>
-                    )}
+                    {!this.state.editMode &&
+                        (this.props.user.bio ? (
+                            <div className="centeredFlex">
+                                <button onClick={this.toggleEditMode}>
+                                    Edit
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="centeredFlex">
+                                <button onClick={this.toggleEditMode}>
+                                    Add bio
+                                </button>
+                            </div>
+                        ))}
                 </div>
             </div>
         );

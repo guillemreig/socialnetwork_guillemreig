@@ -1,4 +1,13 @@
 /* HOME */
+canvas {
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    filter: blur(1px);
+
+    z-index: -1;
+}
+
 #Home {
     width: 100vw;
 

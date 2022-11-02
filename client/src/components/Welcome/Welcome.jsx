@@ -10,7 +10,7 @@ export default function Welcome() {
         <div id="Welcome">
             <div className="backgroundWelcome">
                 <div id="background5" className="background"></div>
-                <div className="background"></div>
+                <div id="background4" className="background"></div>
                 <div id="background3" className="background"></div>
                 <div id="background2" className="background"></div>
                 <div id="background1" className="background"></div>

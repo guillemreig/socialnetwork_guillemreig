@@ -223,6 +223,23 @@ function acceptFriendshipRequest(user1, user2) {
         );
 }
 
+// get friendships
+function getFriendships(id) {
+    const sql = `
+    SELECT users.id, first_name, last_name, picture, status
+    FROM users JOIN requests
+    ON (status = false AND receiver_id = $1 AND users.id = requests.sender_id)
+    OR (status = true AND receiver_id = $1 AND users.id = requests.sender_id)
+    OR (status = true AND sender_id = $1 AND users.id = requests.receiver_id)
+    ;`;
+    return db
+        .query(sql, [id])
+        .then((result) => result.rows)
+        .catch((error) =>
+            console.log("Error in acceptFriendshipRequest:", error)
+        );
+}
+
 // EXPORTS
 module.exports = {
     checkEmail,
@@ -241,4 +258,5 @@ module.exports = {
     askFriendship,
     cancelFriendshipRequest,
     acceptFriendshipRequest,
+    getFriendships,
 };

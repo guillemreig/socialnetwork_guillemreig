@@ -479,8 +479,23 @@ app.get("/accept/:id.json", (req, res) => {
         });
 });
 
-// CATCH ALL
+// get all friends and pending requests
+app.get("/friendships.json", (req, res) => {
+    const id = req.session.id;
+    console.log("GET ALL FRIENDS. id:", id);
 
+    db.getFriendships(id)
+        .then((data) => {
+            console.log("data :", data);
+
+            res.json(data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+});
+
+// CATCH ALL
 app.get("*", function (req, res) {
     res.sendFile(path.join(__dirname, "..", "client", "index.html"));
 });

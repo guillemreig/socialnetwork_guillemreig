@@ -162,6 +162,13 @@ header {
     margin-top: 70px;
 }
 
+/* FRIENDS */
+
+.friendList {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 @keyframes panning {
     0% {
         background-position: 0% 0%;

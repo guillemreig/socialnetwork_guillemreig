@@ -15,7 +15,7 @@ function FindUserResultList({ users, setResultList }) {
                         alt="user picture"
                     />
                     <Link to={`/user/${user.id}`}>
-                        <h3>
+                        <h3 className="button">
                             {user.first_name} {user.last_name}
                         </h3>
                     </Link>

@@ -14,7 +14,6 @@ const db = require("./db");
 
 // Encryption
 const bcrypt = require("bcryptjs");
-bcrypt;
 
 // Cookies
 // const cookieSession = require("cookie-session");
@@ -48,9 +47,14 @@ io.use((socket, next) => {
     cookieSessionMiddleware(socket.request, socket.request.res, next);
 });
 
+// store user.id-socket.id pairs
+const socketId = {};
+
 io.on("connection", async (socket) => {
     const userId = socket.request.session.id;
-    console.log("connection. id:", userId);
+    socketId[userId] = socket.id;
+    console.log("connection. id:", userId, "socketId:", socket.id);
+    console.log("socketId", socketId);
 
     if (!userId) {
         return socket.disconnect(true);
@@ -69,19 +73,28 @@ io.on("connection", async (socket) => {
         console.log(message);
 
         const { chatId, text } = message;
-        // 1. store the message in the database
-        console.log("---------------------");
-        console.log("userId :", userId, typeof userId);
-        console.log("chatId :", chatId, typeof chatId);
-        console.log("text :", text);
 
+        console.log(
+            "userId:",
+            userId,
+            "socket.id",
+            socket.id,
+            "chatId",
+            chatId
+        );
+        // 1. store the message in the database
         try {
             const messageId = await db.addMessage(userId, chatId, text);
             const messageData = await db.getMessage(messageId[0].id); //!!!!!!!!!!!!
 
             // 2. send the message to all connected sockets
             // include all relevant information (user id, user name, picture, message, timestamp)
-            io.emit("newMessage", messageData[0]);
+            if (messageData[0].receiver_id === 0) {
+                io.emit("newMessage", messageData[0]); // if it's a message to the global chat, send to everyone
+            } else {
+                io.to(socketId[userId]).emit("newMessage", messageData[0]);
+                io.to(socketId[chatId]).emit("newMessage", messageData[0]);
+            } // if the message is directed at a private chat, send only to participants
         } catch (error) {
             console.error(error);
         }
@@ -571,17 +584,25 @@ app.get("/messages/:id.json", (req, res) => {
     const user2 = req.params.id;
     const limit = 10;
 
-    console.log("GET MESSAGES. id1:", user1, "id2:", user2);
-
-    db.getMessages(user1, user2, limit)
-        .then((data) => {
-            console.log("getMessages data :", data);
-
-            res.json(data);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+    if (user2 == 0) {
+        console.log("GET MESSAGES GLOBAL. id2:", user2);
+        db.getMessagesGlobal(limit)
+            .then((data) => {
+                res.json(data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    } else {
+        console.log("GET MESSAGES. id1:", user1, "id2:", user2);
+        db.getMessages(user1, user2, limit)
+            .then((data) => {
+                res.json(data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
 });
 
 // CATCH ALL

@@ -1,5 +1,5 @@
 /* HOME */
-canvas {
+#canvas {
     position: fixed;
     height: 100vh;
     width: 100vw;
@@ -179,6 +179,43 @@ header {
     bottom: 0;
     background-color: #231809d5;
     border-top-left-radius: 10px;
+}
+
+.chatWindow {
+    padding: 20px;
+    border: 2px solid #412c0f;
+    background-color: #231809d5;
+    height: fit-content;
+}
+
+.flexDiv {
+    display: flex;
+}
+
+#chatFeed {
+    height: 400px;
+    overflow: scroll;
+    padding: 10px;
+    /* background-color: beige; */
+}
+
+.chatMessage {
+    display: flex;
+    gap: 20px;
+    height: 50px;
+    width: 100%;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+#chatTextarea {
+    width: 100%;
+}
+
+.chatMenu {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
 }
 
 @keyframes panning {

@@ -34,7 +34,7 @@ export default function Friends(props) {
                 return res.json();
             })
             .then((data) => {
-                data && dispatch(getFriends(data));
+                data.length && dispatch(getFriends(data));
             })
             .catch((error) => {
                 console.log(error);

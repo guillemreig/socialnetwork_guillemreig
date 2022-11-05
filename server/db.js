@@ -241,15 +241,29 @@ function getFriendships(id) {
 // get messages
 function getMessages(user1, user2, limit) {
     const sql = `
-    SELECT users.id, first_name, last_name, picture, text, messages.created_at
+    SELECT messages.id, sender_id, receiver_id, first_name, last_name, picture, text, messages.created_at
     FROM messages JOIN users
     ON (users.id = messages.sender_id AND sender_id = $1 AND receiver_id = $2)
     OR (users.id = messages.sender_id AND sender_id = $2 AND receiver_id = $1)
-    ORDER BY messages.created_at DESC
+    ORDER BY messages.created_at ASC
     LIMIT $3
     ;`;
     return db
         .query(sql, [user1, user2, limit])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in getMessages:", error));
+}
+
+function getMessagesGlobal(limit) {
+    const sql = `
+    SELECT messages.id, sender_id, receiver_id, first_name, last_name, picture, text, messages.created_at
+    FROM messages JOIN users
+    ON (users.id = messages.sender_id AND receiver_id = 0)
+    ORDER BY messages.created_at ASC
+    LIMIT $1
+    ;`;
+    return db
+        .query(sql, [limit])
         .then((result) => result.rows)
         .catch((error) => console.log("Error in getMessages:", error));
 }
@@ -270,7 +284,7 @@ function addMessage(user1, user2, text) {
 // get sigle message by message id
 function getMessage(messageId) {
     const sql = `
-        SELECT users.id, first_name, last_name, text, messages.created_at, sender_id, receiver_id
+        SELECT messages.id, sender_id, receiver_id, first_name, last_name, picture, text, messages.created_at, sender_id, receiver_id
         FROM messages JOIN users
         ON sender_id = users.id
         WHERE messages.id = $1
@@ -301,6 +315,7 @@ module.exports = {
     acceptFriendshipRequest,
     getFriendships,
     getMessages,
+    getMessagesGlobal,
     addMessage,
     getMessage,
 };

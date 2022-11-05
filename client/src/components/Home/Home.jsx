@@ -1,5 +1,4 @@
 import "./home.css";
-// import { Component } from "react";
 import { Route, Link } from "react-router-dom";
 
 import Canvas from "./subcomponents/Canvas.jsx";
@@ -12,26 +11,18 @@ import Chat from "./subcomponents/Chat.jsx";
 
 // REDUX
 import { useEffect, useState } from "react";
-// import { useSelector, useDispatch } from "react-redux";
-// import { receiveFriends } from "../../redux/root.js";
-
-// socket.io
-// import socketIOClient from "socket.io-client";
-// const socket = socketIOClient("http://localhost:3000");
+import { useSelector, useDispatch } from "react-redux";
+import { loginUser, logoutUser } from "../../redux/reducer.js";
 
 export default function Home() {
-    const [user, setUser] = useState({
-        first_name: "",
-        last_name: "",
-        email: "",
-        picture: "",
-        bio: "",
-        created_at: "",
-    });
-    const [profileMenu, setProfileMenu] = useState(false);
+    const dispatch = useDispatch(); // For some reason this conversion is mandatory
+
+    const user = useSelector((state) => state.user);
+    const [profileMenu, setProfileMenu] = useState(false); // is the profile window open? (default 'false')
 
     function logOut() {
         console.log("logOut()");
+        dispatch(logoutUser());
 
         fetch("/logout");
         history.pushState({}, "", `/`);
@@ -39,10 +30,7 @@ export default function Home() {
     }
 
     function toggleProfile() {
-        // Set it to the opposite of the current value
-        console.log("toggleProfile()");
-
-        setProfileMenu(!profileMenu);
+        setProfileMenu(!profileMenu); // Set it to the opposite of the current value
     }
 
     function updateProfile(draft) {
@@ -54,11 +42,10 @@ export default function Home() {
 
         // this.setState({ user: { ...draft } });
 
-        setUser({ ...draft });
+        // setUser({ ...draft });
     }
 
     useEffect(() => {
-        // fetch user info from server
         fetch("/user/0.json")
             .then((res) => {
                 return res.json();
@@ -66,8 +53,7 @@ export default function Home() {
             .then((data) => {
                 !data.bio && (data.bio = "");
 
-                // add it to the state
-                setUser(data);
+                data && dispatch(loginUser(data)); // fetch user info from server and send it to redux global store
             })
             .catch((error) => {
                 console.log(error);
@@ -125,9 +111,11 @@ export default function Home() {
                 <Route exact path="/">
                     <UserPage user={user} />
                 </Route>
+
                 <Route path="/friends">
                     <Friends user={user} />
                 </Route>
+
                 <Route path="/user/:id">
                     <OtherUser />
                 </Route>

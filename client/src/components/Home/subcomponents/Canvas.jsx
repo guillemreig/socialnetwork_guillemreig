@@ -115,7 +115,7 @@ function Canvas(props) {
         requestAnimationFrame(draw);
     });
 
-    return <canvas ref={canvasRef} {...props} />;
+    return <canvas id="canvas" ref={canvasRef} {...props} />;
 }
 
 export default Canvas;

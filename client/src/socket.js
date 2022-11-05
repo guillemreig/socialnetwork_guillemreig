@@ -1,7 +1,9 @@
 import { io } from "socket.io-client";
-import { chatMessagesReceived } from "./redux/reducer.js";
 
 export let socket;
+
+// Redux
+import { addMessage } from "./redux/reducer.js";
 
 export const initSocket = (store) => {
     if (!socket) {
@@ -9,6 +11,8 @@ export const initSocket = (store) => {
 
         socket.on("newMessage", (data) => {
             console.log("newMessage data:", data);
+
+            store.dispatch(addMessage(data));
 
             // add the messages to the redux store
             // store.dispatch(chatMessagesReceived(data.messages));

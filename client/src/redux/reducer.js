@@ -1,40 +1,66 @@
-// SETUP
+// REDUX SETUP
 import { combineReducers } from "redux";
 
 // Initial state
 const initialState = {
+    user: {},
     friends: [],
-    messages: [
-        {
-            first_name: "Name",
-            last_name: "Lastname",
-            picture: "/default_user.jpg",
-            text: "This is a text message.",
-        },
-    ],
+    chatId: 0,
+    messages: [],
 };
+
+// USER
+// reducer:
+function userReducer(user = initialState.user, action) {
+    if (action.type == "/user/login") {
+        return action.payload.user;
+    } else if (action.type == "/user/edit") {
+        console.log("action.payload.user :", action.payload.user);
+        return action.payload.user;
+    } else if (action.type == "/user/logout") {
+        return initialState.user;
+    }
+
+    return user;
+}
+
+// actions:
+export function loginUser(user) {
+    return {
+        type: "/user/login",
+        payload: { user },
+    };
+}
+
+export function editUser(user) {
+    console.log("reducer editUser");
+    return {
+        type: "/user/edit",
+        payload: { user },
+    };
+}
+
+export function logoutUser() {
+    return {
+        type: "/user/logout",
+        payload: { undefined },
+    };
+}
 
 // FRIENDS
 // reducer:
 function friendsReducer(friends = initialState.friends, action) {
     if (action.type === "friends/get") {
-        // console.log("action.payload.friends :", action.payload.friends);
         return action.payload.friends;
     } else if (action.type === "friends/accept") {
-        // console.log("action.payload.id :", action.payload.id);
-
         const index = friends.map((user) => user.id).indexOf(action.payload.id);
-        // console.log("friends[index]", friends[index]);
 
         const newFriends = [...friends];
         newFriends[index].status = true;
 
         return newFriends;
     } else if (action.type === "friends/reject") {
-        // console.log("action.payload.id :", action.payload.id);
-
         const index = friends.map((user) => user.id).indexOf(action.payload.id);
-        // console.log("friends[index]", friends[index]);
 
         const newFriends = [...friends];
         newFriends.splice(index, 1);
@@ -68,25 +94,47 @@ export function rejectFriend(id) {
     };
 }
 
-// MESSAGES
-function messagesReducer(messages = [], action) {
-    // switch (action.type) {
-    //     case "/messages/received-many":
-    //         return [...messages, action.payload.messages];
-    //         break;
-    //     case "/messages/received-one":
-    //         return action.payload.message;
-    //         break;
-    //     default:
-    //         return messages;
-    // }
-    if (action.type == "messages/get") {
-        // console.log("action.payload.messages :", action.payload.messages);
-        return action.payload.messages;
+// CHAT ID
+// reducer
+function chatIdReducer(chatId = initialState.chatId, action) {
+    if (action.type == "/chatId/set") {
+        return action.payload.chatId;
     }
+    return chatId;
+}
 
-    // console.log("messages :", messages);
+// actions
+export function setChatId(chatId) {
+    return {
+        type: "/chatId/set",
+        payload: { chatId },
+    };
+}
+
+// MESSAGES
+// reducer
+function messagesReducer(messages = initialState.messages, action) {
+    if (action.type == "/messages/reset") {
+        return initialState.messages;
+    } else if (action.type == "/messages/get") {
+        return action.payload.messages;
+    } else if (action.type == "/messages/add") {
+        // Ideally only if the correct chat is active the message should be added to the message array
+        // unfortunatelly I can't access
+
+        const newMessages = [...messages, action.payload.message];
+
+        return newMessages;
+    }
     return messages;
+}
+
+// actions
+export function resetMessages() {
+    return {
+        type: "/messages/reset",
+        payload: { undefined },
+    };
 }
 
 export function getMessages(messages) {
@@ -96,16 +144,19 @@ export function getMessages(messages) {
     };
 }
 
-// export function chatMessageReceived(message) {
-//     return {
-//         type: "/messages/received-one",
-//         payload: { message },
-//     };
-// }
+export function addMessage(message) {
+    return {
+        type: "/messages/add",
+        payload: { message },
+    };
+}
 
 // ROOT REDUCER
+
 const rootReducer = combineReducers({
+    user: userReducer,
     friends: friendsReducer,
+    chatId: chatIdReducer,
     messages: messagesReducer,
 });
 

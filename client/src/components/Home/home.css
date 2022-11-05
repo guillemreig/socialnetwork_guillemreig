@@ -15,15 +15,17 @@ canvas {
     flex-direction: column;
 }
 
+#Home a {
+    text-decoration: none;
+}
+
 .backgroundHome {
-    width: 105vw;
+    width: 100vw;
     height: 100vh;
 
-    background-image: url(https://media.moddb.com/images/games/1/48/47046/FC_Primal_Twitter_Tweet_3.jpg);
-    background-position: fixed;
-    /* background-size: 105% 100vh; */
+    background-image: url(https://rare-gallery.com/uploads/posts/571833-far-cry-primal.jpg);
 
-    background-size: cover;
+    background-size: auto 103vh;
 
     animation: panning 30s infinite ease-in-out;
 
@@ -35,7 +37,7 @@ canvas {
 /* HEADER */
 header {
     width: 100%;
-    background-color: #231809;
+    background-color: #231809d2;
     position: fixed;
     display: flex;
     justify-content: space-between;
@@ -135,13 +137,12 @@ header {
 .userPage {
     width: 1000px;
     min-height: 100vh;
-    margin: 0 auto;
+    margin: 70px auto 0 auto;
     background-color: #140d05d5;
     display: flex;
 }
 
 .sidebar {
-    margin-top: 70px;
     width: 280px;
     background-color: rgba(0, 0, 0, 0.344);
     display: flex;
@@ -159,7 +160,8 @@ header {
 /* TIMELINE */
 
 .timeline {
-    margin-top: 70px;
+    display: flex;
+    flex-direction: column;
 }
 
 /* FRIENDS */
@@ -169,14 +171,24 @@ header {
     flex-wrap: wrap;
 }
 
+/* CHAT */
+
+.chatDiv {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    background-color: #231809d5;
+    border-top-left-radius: 10px;
+}
+
 @keyframes panning {
     0% {
-        background-position: 0% 0%;
+        background-position: 0px 0%;
     }
     50% {
-        background-position: -70px 0%;
+        background-position: -60px 0%;
     }
     100% {
-        background-position: 0% 0%;
+        background-position: 0px 0%;
     }
 }

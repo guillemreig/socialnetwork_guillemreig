@@ -235,9 +235,50 @@ function getFriendships(id) {
     return db
         .query(sql, [id])
         .then((result) => result.rows)
-        .catch((error) =>
-            console.log("Error in acceptFriendshipRequest:", error)
-        );
+        .catch((error) => console.log("Error in getFriendships:", error));
+}
+
+// get messages
+function getMessages(user1, user2, limit) {
+    const sql = `
+    SELECT users.id, first_name, last_name, picture, text, messages.created_at
+    FROM messages JOIN users
+    ON (users.id = messages.sender_id AND sender_id = $1 AND receiver_id = $2)
+    OR (users.id = messages.sender_id AND sender_id = $2 AND receiver_id = $1)
+    ORDER BY messages.created_at DESC
+    LIMIT $3
+    ;`;
+    return db
+        .query(sql, [user1, user2, limit])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in getMessages:", error));
+}
+
+// add new message
+function addMessage(user1, user2, text) {
+    const sql = `
+        INSERT INTO messages (sender_id, receiver_id, text)
+        VALUES ($1, $2, $3)
+        RETURNING id
+        ;`;
+    return db
+        .query(sql, [user1, user2, text])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in addMessage:", error));
+}
+
+// get sigle message by message id
+function getMessage(messageId) {
+    const sql = `
+        SELECT users.id, first_name, last_name, text, messages.created_at, sender_id, receiver_id
+        FROM messages JOIN users
+        ON sender_id = users.id
+        WHERE messages.id = $1
+        ;`;
+    return db
+        .query(sql, [messageId])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in getMessage:", error));
 }
 
 // EXPORTS
@@ -259,4 +300,7 @@ module.exports = {
     cancelFriendshipRequest,
     acceptFriendshipRequest,
     getFriendships,
+    getMessages,
+    addMessage,
+    getMessage,
 };

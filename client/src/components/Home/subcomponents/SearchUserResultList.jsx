@@ -17,7 +17,7 @@ function FindUserResultList({ users, setResultList }) {
                     <Link to={`/user/${user.id}`}>
                         <h3>
                             {user.first_name} {user.last_name}
-                        </h3>{" "}
+                        </h3>
                     </Link>
                 </div>
             ))}

@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 
 function OtherUser() {
     const { id } = useParams();
+
     const [otherUser, setOtherUser] = useState({
         first_name: "",
         last_name: "",
@@ -149,25 +150,6 @@ function FriendButton(props) {
             });
     }
 
-    function unfriendRequest() {
-        console.log("unfriendRequest. id:", id);
-
-        fetch(`/cancel/${id}.json`)
-            .then((res) => {
-                return res.json();
-            })
-            .then((data) => {
-                console.log("unfriendRequest data:", data);
-
-                if (data.success == true) {
-                    setOtherUserStatus("befriend");
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    }
-
     return (
         <>
             {otherUserStatus == "befriend" && (
@@ -187,7 +169,7 @@ function FriendButton(props) {
                 </div>
             )}
             {otherUserStatus == "unfriend" && (
-                <button onClick={unfriendRequest}>Unfriend</button>
+                <button onClick={cancelFriendRequest}>Unfriend</button>
             )}
         </>
     );

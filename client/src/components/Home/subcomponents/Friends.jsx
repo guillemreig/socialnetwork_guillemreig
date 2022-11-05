@@ -4,7 +4,11 @@ import { Link } from "react-router-dom";
 
 // Redux
 import { useSelector, useDispatch } from "react-redux";
-import { setFriends } from "../../../redux/friends.slice";
+import {
+    getFriends,
+    acceptFriend,
+    rejectFriend,
+} from "../../../redux/reducer.js";
 
 export default function Friends(props) {
     // const [pendingFriends, setPendingFriends] = useState([]);
@@ -24,32 +28,50 @@ export default function Friends(props) {
     });
 
     useEffect(() => {
-        console.log("Friends useEffect");
+        // console.log("Friends useEffect");
         fetch("/friendships.json")
             .then((res) => {
                 return res.json();
             })
             .then((data) => {
-                console.log("data :", data); // 'data' is an array of objects: [{user1}, {user2}, ...]
-
-                // const pendingArr = data.filter((user) => user.status === false);
-                // const acceptedArr = data.filter((user) => user.status === true);
-
-                // console.log("pendingArr :", pendingArr);
-                // console.log("acceptedArr :", acceptedArr);
-
-                // setPendingFriends(pendingArr);
-                // setAcceptedFriends(acceptedArr);
-
-                // Redux
-                dispatch(setFriends(data));
+                data && dispatch(getFriends(data));
             })
             .catch((error) => {
                 console.log(error);
             });
-
-        // dispatch(setFriends)
     }, []);
+
+    function acceptFriendRequest(id) {
+        // console.log("acceptFriendRequest. id:", id);
+
+        fetch(`/accept/${id}.json`)
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                // console.log("acceptFriendRequest data:", data);
+                data.success && dispatch(acceptFriend(id)); // If success, update state
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
+    function cancelFriendRequest(id) {
+        // console.log("cancelFriendRequest. id:", id);
+
+        fetch(`/cancel/${id}.json`)
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                // console.log("acceptFriendRequest data:", data);
+                data.success && dispatch(rejectFriend(id)); // If success, update state
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
 
     return (
         <div className="userPage">
@@ -85,6 +107,24 @@ export default function Friends(props) {
                                     {user.first_name} {user.last_name}
                                 </h3>{" "}
                             </Link>
+                            {!user.status && (
+                                <>
+                                    <button
+                                        onClick={() => {
+                                            acceptFriendRequest(user.id);
+                                        }}
+                                    >
+                                        Accept
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            cancelFriendRequest(user.id);
+                                        }}
+                                    >
+                                        Reject
+                                    </button>
+                                </>
+                            )}
                         </div>
                     ))}
                 </div>

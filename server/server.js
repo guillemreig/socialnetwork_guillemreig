@@ -17,7 +17,8 @@ const bcrypt = require("bcryptjs");
 bcrypt;
 
 // Cookies
-const cookieSession = require("cookie-session");
+// const cookieSession = require("cookie-session");
+const { cookieSessionMiddleware } = require("./middleware");
 
 // Image upload
 const { uploader } = require("./middleware");
@@ -33,14 +34,82 @@ const s3 = new aws.S3({
     secretAccessKey: secrets.AWS_SECRET,
 });
 
+// socket.io
+const server = require("http").Server(app);
+
+const io = require("socket.io")(server, {
+    allowRequest: (req, callback) => {
+        callback(null, req.headers.referer.startsWith("http://localhost:3000"));
+    },
+});
+
+// allow socket.io to use cookie session
+io.use((socket, next) => {
+    cookieSessionMiddleware(socket.request, socket.request.res, next);
+});
+
+io.on("connection", async (socket) => {
+    const userId = socket.request.session.id;
+    console.log("connection. id:", userId);
+
+    if (!userId) {
+        return socket.disconnect(true);
+    }
+
+    socket.on("disconnect", function () {
+        console.log("disconnect. id:", userId);
+    });
+
+    // 1. send them the latest messages
+    // const latestMessages = await db.getMessages();
+    // socket.emit("chatMessages", latestMessages);
+
+    // 2. listen for a new message event
+    socket.on("sendMessage", async (message) => {
+        console.log(message);
+
+        const { chatId, text } = message;
+        // 1. store the message in the database
+        console.log("---------------------");
+        console.log("userId :", userId, typeof userId);
+        console.log("chatId :", chatId, typeof chatId);
+        console.log("text :", text);
+
+        try {
+            const messageId = await db.addMessage(userId, chatId, text);
+            const messageData = await db.getMessage(messageId[0].id); //!!!!!!!!!!!!
+
+            // 2. send the message to all connected sockets
+            // include all relevant information (user id, user name, picture, message, timestamp)
+            io.emit("newMessage", messageData[0]);
+        } catch (error) {
+            console.error(error);
+        }
+
+        // try...
+
+        // catch...
+    });
+});
+
+// io.on("connection", (socket) => {
+//     console.log("new client connection", socket.id);
+
+//     socket.on("new-message", (payload) => {
+//         console.log("New message :", payload);
+//     });
+// });
+
 // MIDDLEWARE
-app.use(
-    cookieSession({
-        secret: process.env.SESSION_SECRET,
-        maxAge: 1000 * 60 * 60 * 24 * 1, // miliseconds * seconds * minutes * hours * days
-        sameSite: true,
-    })
-);
+
+// app.use(
+//     cookieSession({
+//         secret: process.env.SESSION_SECRET,
+//         maxAge: 1000 * 60 * 60 * 24 * 1, // miliseconds * seconds * minutes * hours * days // currently: 1 day
+//         sameSite: true,
+//     })
+// );
+app.use(cookieSessionMiddleware);
 
 app.use(compression());
 
@@ -51,7 +120,7 @@ app.use(express.json()); // This is needed to read the req.body
 // ROUTES
 // Get user id from cookie
 app.get("/user/id.json", (req, res) => {
-    console.log("req.session :", req.session);
+    // console.log("req.session :", req.session);
 
     if (req.session.id) {
         res.json({
@@ -66,7 +135,7 @@ app.get("/user/id.json", (req, res) => {
 
 // get user data (own or other)
 app.get("/user/:id.json", (req, res) => {
-    console.log("GET USER. id :", req.params.id);
+    // console.log("GET USER. id :", req.params.id);
 
     let id = req.params.id;
     // if 'id' is 0 the request comes from own Home page and wants own user data
@@ -76,7 +145,7 @@ app.get("/user/:id.json", (req, res) => {
     // if 'id' is another number, it comes from OtherUserPage and wants somoene else's data
     db.getUserById(id)
         .then((data) => {
-            console.log("data :", data);
+            // console.log("data :", data);
             delete data[0].password; // caution!
             data[0].created_at = data[0].created_at.toString().split(" GMT")[0];
 
@@ -89,7 +158,7 @@ app.get("/user/:id.json", (req, res) => {
 
 // Registration
 app.post("/registration", (req, res) => {
-    console.log("REGISTRATION. req.body :", req.body);
+    // console.log("REGISTRATION. req.body :", req.body);
 
     // Check if email already exists
     db.checkEmail(req.body.email)
@@ -136,7 +205,7 @@ app.post("/registration", (req, res) => {
 
 // Log in
 app.post("/login", (req, res) => {
-    console.log("LOG IN. req.body:", req.body);
+    // console.log("LOG IN. req.body:", req.body);
 
     // Get user info from database
     db.getUser(req.body.email)
@@ -185,7 +254,7 @@ app.get("/logout", (req, res) => {
 
 // Reset password
 app.post("/getcode", (req, res) => {
-    console.log("GET CODE. req.body:", req.body);
+    // console.log("GET CODE. req.body:", req.body);
 
     db.getUser(req.body.email)
         .then((data) => {
@@ -227,7 +296,7 @@ app.post("/getcode", (req, res) => {
 });
 
 app.post("/resetpassword", (req, res) => {
-    console.log("RESET PASSWORD req.body :", req.body);
+    // console.log("RESET PASSWORD req.body :", req.body);
 
     db.checkCode(req.body.email)
         .then((data) => {
@@ -275,8 +344,8 @@ app.post("/resetpassword", (req, res) => {
 
 // Edit profile
 app.post("/profile", uploader.single("file"), (req, res) => {
-    console.log("EDIT PROFILE. req.body :", req.body);
-    console.log("req.file :", req.file);
+    // console.log("EDIT PROFILE. req.body :", req.body);
+    // console.log("req.file :", req.file);
 
     const { id } = req.session;
     const { first_name, last_name, email, bio } = req.body;
@@ -313,7 +382,7 @@ app.post("/profile", uploader.single("file"), (req, res) => {
             if (req.file) {
                 // CREATE URL
                 const picture = `https://s3.amazonaws.com/spicedling/${req.file.filename}`;
-                console.log("picture url :", picture);
+                // console.log("picture url :", picture);
 
                 // DELETE IMAGE FROM LOCAL STORAGE
                 fs.unlink(req.file.path, function (err) {
@@ -354,10 +423,10 @@ app.post("/profile", uploader.single("file"), (req, res) => {
 
 // SEARCH USER
 app.get("/users/:string", (req, res) => {
-    console.log("SEARCH USER. req.params.string :", req.params.string);
+    // console.log("SEARCH USER. req.params.string :", req.params.string);
 
     const searchArr = req.params.string.split(" ");
-    console.log("searchArr :", searchArr);
+    // console.log("searchArr :", searchArr);
 
     if (searchArr.length > 1) {
         db.searchUserFullname(searchArr[0], searchArr[1] + "%")
@@ -384,7 +453,7 @@ app.get("/users/:string", (req, res) => {
 // FRIEND BUTTON
 // get user friend status
 app.get("/status/:id.json", (req, res) => {
-    console.log("GET USER STATUS. id1, id2 :", req.session.id, req.params.id);
+    // console.log("GET USER STATUS. id1, id2 :", req.session.id, req.params.id);
 
     const id1 = req.session.id;
     const id2 = req.params.id;
@@ -415,7 +484,7 @@ app.get("/status/:id.json", (req, res) => {
 
 // make friendship request
 app.get("/befriend/:id.json", (req, res) => {
-    console.log("BEFRIEND. id1, id2 :", req.session.id, req.params.id);
+    // console.log("BEFRIEND. id1, id2 :", req.session.id, req.params.id);
 
     const id1 = req.session.id;
     const id2 = req.params.id;
@@ -437,7 +506,7 @@ app.get("/befriend/:id.json", (req, res) => {
 
 // cancel friendship request
 app.get("/cancel/:id.json", (req, res) => {
-    console.log("CANCEL. id1, id2 :", req.session.id, req.params.id);
+    // console.log("CANCEL. id1, id2 :", req.session.id, req.params.id);
 
     const id1 = req.session.id;
     const id2 = req.params.id;
@@ -459,7 +528,7 @@ app.get("/cancel/:id.json", (req, res) => {
 
 // accept friendship request
 app.get("/accept/:id.json", (req, res) => {
-    console.log("ACCEPT. id1, id2 :", req.session.id, req.params.id);
+    // console.log("ACCEPT. id1, id2 :", req.session.id, req.params.id);
 
     const id1 = req.session.id;
     const id2 = req.params.id;
@@ -482,11 +551,31 @@ app.get("/accept/:id.json", (req, res) => {
 // get all friends and pending requests
 app.get("/friendships.json", (req, res) => {
     const id = req.session.id;
-    console.log("GET ALL FRIENDS. id:", id);
+    // console.log("GET ALL FRIENDS. id:", id);
 
     db.getFriendships(id)
         .then((data) => {
-            console.log("data :", data);
+            // console.log("data :", data);
+
+            res.json(data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+});
+
+// CHAT
+// get messages
+app.get("/messages/:id.json", (req, res) => {
+    const user1 = req.session.id;
+    const user2 = req.params.id;
+    const limit = 10;
+
+    console.log("GET MESSAGES. id1:", user1, "id2:", user2);
+
+    db.getMessages(user1, user2, limit)
+        .then((data) => {
+            console.log("getMessages data :", data);
 
             res.json(data);
         })
@@ -501,6 +590,11 @@ app.get("*", function (req, res) {
 });
 
 // INITIALIZATION
-app.listen(process.env.PORT || 3001, function () {
+// socket.io changes 'app' to 'server'
+server.listen(process.env.PORT || 3001, function () {
     console.log("I'm listening.");
 });
+
+// app.listen(process.env.PORT || 3001, function () {
+//     console.log("I'm listening.");
+// });

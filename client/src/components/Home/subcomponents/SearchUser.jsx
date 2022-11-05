@@ -15,7 +15,6 @@ function SearchUser() {
         setSearchString(e.target.value);
 
         if (e.target.value == "") {
-            console.log("here!");
             setUsers([]);
             return;
         }
@@ -43,7 +42,6 @@ function SearchUser() {
             <input
                 className="input"
                 type="text"
-                name="search"
                 placeholder="Search User"
                 value={searchString}
                 onChange={inputChange}

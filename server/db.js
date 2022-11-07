@@ -131,6 +131,51 @@ function updateProfileAndPic(id, first_name, last_name, email, bio, picture) {
         .catch((error) => console.log("Error in updateProfile:", error));
 }
 
+// DELETE
+function deleteMessages(id) {
+    const sql = `
+    DELETE FROM messages
+    WHERE sender_id = $1 OR receiver_id = $1
+    ;`;
+    return db
+        .query(sql, [id])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in deleteAccount:", error));
+}
+
+function deleteRequests(id) {
+    const sql = `
+    DELETE FROM requests
+    WHERE sender_id = $1 OR receiver_id = $1
+    ;`;
+    return db
+        .query(sql, [id])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in deleteAccount:", error));
+}
+
+function deleteCodes(email) {
+    const sql = `
+    DELETE FROM codes
+    WHERE user_email = $1
+    ;`;
+    return db
+        .query(sql, [email])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in deleteAccount:", error));
+}
+
+function deleteAccount(id, email) {
+    const sql = `
+    DELETE FROM users
+    WHERE id = $1 AND email = $2
+    ;`;
+    return db
+        .query(sql, [id, email])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in deleteAccount:", error));
+}
+
 // SEARCH USER
 function searchUser(name) {
     const sql = `
@@ -307,6 +352,10 @@ module.exports = {
     getProfile,
     updateProfile,
     updateProfileAndPic,
+    deleteMessages,
+    deleteRequests,
+    deleteCodes,
+    deleteAccount,
     searchUser,
     searchUserFullname,
     getFriendshipStatus,

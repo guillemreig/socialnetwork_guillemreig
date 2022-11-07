@@ -1,18 +1,20 @@
 import { useRef, useEffect } from "react";
 
-// Yeah well I obviously didn't write the canvas code. I had to adapt it to 'react' though.
+// Yeah well I obviously didn't write the canvas code, but I had to adapt it to 'react' and understand it to fix some buggy behavior
 // original code is here: https://codepen.io/jh3y/pen/GGmPKd
-function Canvas(props) {
+function Canvas() {
     const canvasRef = useRef(null);
 
     useEffect(() => {
+        // console.log("CANVAS useEffect");
+
         const canvas = canvasRef.current;
         const context = canvas.getContext("2d");
 
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        requestAnimationFrame;
+        // requestAnimationFrame;
 
         const OPTIONS = {
             AMOUNT: 100,
@@ -46,6 +48,7 @@ function Canvas(props) {
                 const color = `rgba(255,${
                     100 + Math.floor(Math.random() * 70)
                 }, 0, ${Math.random()})`;
+
                 const xDelayed = doIt();
                 const startX = xDelayed
                     ? -(size + floored(canvas.width))
@@ -77,6 +80,7 @@ function Canvas(props) {
             });
 
         let particles = genParticles();
+        // console.log("particles.length :", particles.length);
 
         let FRAME_COUNT = 0;
 
@@ -113,9 +117,9 @@ function Canvas(props) {
             requestAnimationFrame(draw);
         };
         requestAnimationFrame(draw);
-    });
+    }, []);
 
-    return <canvas id="canvas" ref={canvasRef} {...props} />;
+    return <canvas id="canvas" ref={canvasRef} />;
 }
 
 export default Canvas;

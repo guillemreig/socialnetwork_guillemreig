@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import { Link } from "react-router-dom";
 
-function OtherUser() {
+function OtherUser(props) {
     const { id } = useParams();
+    const ownId = props.id;
+
+    console.log("id", id);
+    console.log("ownId", ownId);
 
     const [otherUser, setOtherUser] = useState({
         first_name: "",
@@ -13,23 +18,42 @@ function OtherUser() {
         created_at: "",
         friendStatus: "",
     });
+    const [otherUserFriends, setOtherUserFriends] = useState([]);
 
     useEffect(() => {
-        console.log("OtherUserPage useEffect(id)", id);
+        // console.log("OtherUserPage useEffect(id)", id);
 
-        fetch(`/user/${id}.json`)
-            .then((res) => {
-                return res.json();
-            })
-            .then((data) => {
-                !data.bio && (data.bio = "");
+        if (id == ownId) {
+            history.pushState({}, "", `/`);
+            location.reload();
+        } else {
+            fetch(`/user/${id}.json`)
+                .then((res) => {
+                    return res.json();
+                })
+                .then((data) => {
+                    // console.log("otherUser data", data);
 
-                // add it to the state
-                setOtherUser(data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+                    // Handle user data
+                    const userData = data[0][0];
+                    // console.log("OtherUser userData (data[0][0]):", userData);
+
+                    !userData.bio && (userData.bio = "");
+
+                    setOtherUser(userData);
+
+                    // Handle friends data
+                    const friendsData = data[1];
+                    // console.log("OtherUser friendsData (data[1]:", friendsData);
+
+                    setOtherUserFriends(
+                        friendsData.filter((user) => user.status === true)
+                    );
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     }, [id]);
 
     return (
@@ -53,6 +77,20 @@ function OtherUser() {
                         </div>
                     </div>
                 </div>
+                <div>
+                    {otherUserFriends.length && (
+                        <h3 className="logMenu">Friends:</h3>
+                    )}
+                    {otherUserFriends.map((user) => (
+                        <div key={user.id} className="logMenu">
+                            <Link to={`/user/${user.id}`}>
+                                <h4 className="button">
+                                    {user.first_name} {user.last_name}
+                                </h4>
+                            </Link>
+                        </div>
+                    ))}
+                </div>
             </div>
             <div className="timeline">
                 <h1>OTHER USER COMPONENT</h1>
@@ -69,13 +107,14 @@ function FriendButton(props) {
     const { id } = props;
 
     useEffect(() => {
-        console.log("FriendButton useEffect(id):", id);
+        // console.log("FriendButton useEffect(id):", id);
         fetch(`/status/${id}.json`)
             .then((res) => {
                 return res.json();
             })
             .then((data) => {
                 // add it to the state
+                // console.log("button data:", data);
                 if (data.status == null) {
                     setOtherUserStatus("befriend");
                 } else if (data.status == "self") {
@@ -94,14 +133,14 @@ function FriendButton(props) {
     }, [id]);
 
     function sendFriendRequest() {
-        console.log("sendFriendRequest. id:", id);
+        // console.log("sendFriendRequest. id:", id);
 
         fetch(`/befriend/${id}.json`)
             .then((res) => {
                 return res.json();
             })
             .then((data) => {
-                console.log("sendFriendRequest data:", data);
+                // console.log("sendFriendRequest data:", data);
 
                 if (data.status == false) {
                     setOtherUserStatus("cancel");
@@ -113,14 +152,14 @@ function FriendButton(props) {
     }
 
     function cancelFriendRequest() {
-        console.log("cancelFriendRequest. id:", id);
+        // console.log("cancelFriendRequest. id:", id);
 
         fetch(`/cancel/${id}.json`)
             .then((res) => {
                 return res.json();
             })
             .then((data) => {
-                console.log("cancelFriendRequest data:", data);
+                // console.log("cancelFriendRequest data:", data);
 
                 if (data.success == true) {
                     setOtherUserStatus("befriend");
@@ -132,14 +171,14 @@ function FriendButton(props) {
     }
 
     function acceptFriendRequest() {
-        console.log("acceptFriendRequest. id:", id);
+        // console.log("acceptFriendRequest. id:", id);
 
         fetch(`/accept/${id}.json`)
             .then((res) => {
                 return res.json();
             })
             .then((data) => {
-                console.log("acceptFriendRequest data:", data);
+                // console.log("acceptFriendRequest data:", data);
 
                 if (data.success == true) {
                     setOtherUserStatus("unfriend");

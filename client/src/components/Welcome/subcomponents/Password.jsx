@@ -20,13 +20,13 @@ export default class Login extends React.Component {
         this.submitCode = this.submitCode.bind(this);
     }
     inputChange(e) {
-        console.log("inputChange()");
+        // console.log("inputChange()");
         this.setState({ [e.target.name]: e.target.value });
     }
 
     submitForm(e) {
         e.preventDefault();
-        console.log("submitForm(). this.state:", this.state);
+        // console.log("submitForm(). this.state:", this.state);
 
         if (
             // Check if empty fields
@@ -66,7 +66,7 @@ export default class Login extends React.Component {
 
     submitCode(e) {
         e.preventDefault();
-        console.log("submitCode(). this.state:", this.state);
+        // console.log("submitCode(). this.state:", this.state);
 
         if (
             // Check if empty fields
@@ -86,7 +86,7 @@ export default class Login extends React.Component {
                     return res.json();
                 })
                 .then((data) => {
-                    console.log("data :", data);
+                    // console.log("data :", data);
                     if (data.success) {
                         this.setState({ message: "", stage: "done" });
                     } else {

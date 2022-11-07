@@ -133,6 +133,14 @@ header {
     text-align: justify;
 }
 
+#bioText {
+    height: 317px;
+}
+
+#bioTextarea {
+    height: 294px;
+}
+
 /* USER PAGE */
 .userPage {
     width: 1000px;
@@ -150,7 +158,6 @@ header {
 }
 
 /* USER CARD */
-
 .userCard {
     width: 100%;
     padding: 20px;
@@ -158,21 +165,18 @@ header {
 }
 
 /* TIMELINE */
-
 .timeline {
     display: flex;
     flex-direction: column;
 }
 
 /* FRIENDS */
-
 .friendList {
     display: flex;
     flex-wrap: wrap;
 }
 
 /* CHAT */
-
 .chatDiv {
     position: absolute;
     right: 0;
@@ -206,6 +210,10 @@ header {
     width: 100%;
     margin-bottom: 10px;
     text-align: left;
+}
+
+.chatText {
+    max-width: 265px;
 }
 
 #chatTextarea {

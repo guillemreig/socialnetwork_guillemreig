@@ -1,4 +1,3 @@
-// import { CloudWatchLogs } from "aws-sdk";
 import { Component } from "react";
 
 // Variables
@@ -23,27 +22,21 @@ export default class Profile extends Component {
         this.inputChange = this.inputChange.bind(this);
         this.submitForm = this.submitForm.bind(this);
         this.setFile = this.setFile.bind(this);
+        this.deleteAccount = this.deleteAccount.bind(this);
     }
 
     toggleEditMode() {
-        console.log("toggleEditMode()");
-
         this.setState({
             editMode: !this.state.editMode,
         });
     }
 
     inputChange(e) {
-        console.log("inputChange()");
         this.setState({ [e.target.name]: e.target.value });
     }
 
     setFile(e) {
-        console.log("setFile()");
         if (e.target.files && e.target.files[0]) {
-            // Update 'newImage.file' value
-            console.log("e.target.files[0]", e.target.files[0]);
-
             this.setState({ [e.target.name]: e.target.files[0] });
 
             // Image preview
@@ -58,19 +51,11 @@ export default class Profile extends Component {
     }
 
     submitForm() {
-        console.log("saveChanges(). this.state:", this.state);
-
         const { file, first_name, last_name, email, bio } = this.state;
 
-        if (
-            // Check if empty fields
-            !first_name ||
-            !last_name ||
-            !email
-        ) {
+        if (!first_name || !last_name || !email) {
             this.setState({ message: "Missing fields!" });
         } else if (
-            // Check if valid input format
             !email.match(emailRegex) ||
             !first_name.match(namesRegex) ||
             !last_name.match(namesRegex)
@@ -93,10 +78,8 @@ export default class Profile extends Component {
                     return res.json();
                 })
                 .then((data) => {
-                    console.log("data :", data);
                     if (data.success) {
                         this.props.updateProfile(this.state);
-                        // location.reload();
                     } else {
                         this.setState({ message: data.message });
                         throw new Error("PROFILE EDIT FAILED");
@@ -108,9 +91,91 @@ export default class Profile extends Component {
         }
     }
 
-    componentDidMount() {
-        console.log("componentDidMount(). this.props.user :", this.props.user);
+    deleteAccount() {
+        // console.log("deleteAccount");
+        const email = this.state.email;
+        const password = prompt(
+            "Type your password to confirm account deletion:"
+        );
+        console.log("password :", password);
 
+        if (!password) {
+            return;
+        }
+
+        fetch("/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+        })
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                if (!data.success) {
+                    throw new Error("VERIFICATION FAILED");
+                }
+
+                fetch("/getcode", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email }),
+                })
+                    .then((res) => {
+                        return res.json();
+                    })
+                    .then((data) => {
+                        console.log("data :", data);
+
+                        let code = prompt(
+                            "A confirmation email has been sent to the account's associated adress. Write the code received to continue:"
+                        );
+                        console.log("code :", code);
+
+                        if (!code) {
+                            return;
+                        }
+
+                        fetch("/deleteaccount", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ email, code }),
+                        })
+                            .then((res) => {
+                                return res.json();
+                            })
+                            .then((data) => {
+                                // console.log("data :", data);
+                                if (data.success) {
+                                    alert(data.message);
+                                    fetch("/logout");
+                                    history.pushState({}, "", `/`);
+                                    location.reload();
+                                } else {
+                                    alert(data.message);
+                                    return;
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
+    componentDidMount() {
         for (const property in this.props.user) {
             this.setState({ [property]: this.props.user[property] });
         }
@@ -139,6 +204,7 @@ export default class Profile extends Component {
                                             {this.props.user.last_name}
                                         </h2>
                                         <h4>{this.props.user.email}</h4>
+                                        <p>Member since:</p>
                                         <h4>{this.props.user.created_at}</h4>
                                     </div>
                                 </>
@@ -206,13 +272,13 @@ export default class Profile extends Component {
                             </div>
                             <h3>Bio</h3>
                             {!this.state.editMode && (
-                                <p>{this.props.user.bio}</p>
+                                <p id="bioText">{this.props.user.bio}</p>
                             )}
 
                             {this.state.editMode && (
                                 <textarea
+                                    id="bioTextarea"
                                     name="bio"
-                                    id="textarea"
                                     cols="53"
                                     rows="17"
                                     onChange={this.inputChange}
@@ -235,23 +301,29 @@ export default class Profile extends Component {
                                     </div>
                                 </>
                             )}
+
+                            {!this.state.editMode &&
+                                (this.props.user.bio ? (
+                                    <div className="centeredFlex">
+                                        <button onClick={this.toggleEditMode}>
+                                            Edit
+                                        </button>
+                                        <button onClick={this.deleteAccount}>
+                                            Delete Account ❌
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="centeredFlex">
+                                        <button onClick={this.toggleEditMode}>
+                                            Add bio
+                                        </button>
+                                        <button onClick={this.deleteAccount}>
+                                            Delete Account ❌
+                                        </button>
+                                    </div>
+                                ))}
                         </div>
                     </div>
-
-                    {!this.state.editMode &&
-                        (this.props.user.bio ? (
-                            <div className="centeredFlex">
-                                <button onClick={this.toggleEditMode}>
-                                    Edit
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="centeredFlex">
-                                <button onClick={this.toggleEditMode}>
-                                    Add bio
-                                </button>
-                            </div>
-                        ))}
                 </div>
             </div>
         );

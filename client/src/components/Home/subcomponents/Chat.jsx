@@ -7,7 +7,6 @@ import {
     setChatId,
     resetMessages,
     getMessages,
-    getFriends,
 } from "../../../redux/reducer.js";
 
 function Chat() {
@@ -26,19 +25,8 @@ function Chat() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log("Chat useEffect(). chatId:", chatId);
+        // console.log("Chat useEffect(). chatId:", chatId);
         dispatch(resetMessages());
-
-        fetch("/friendships.json")
-            .then((res) => {
-                return res.json();
-            })
-            .then((data) => {
-                data && dispatch(getFriends(data));
-            })
-            .catch((error) => {
-                console.log(error);
-            });
 
         fetch(`/messages/${chatId}.json`)
             .then((res) => {
@@ -53,18 +41,18 @@ function Chat() {
     }, [chatId]);
 
     function toggleChat() {
-        console.log("toggleChat()");
+        // console.log("toggleChat()");
 
         setChat(!chat);
     }
 
     function inputChange(e) {
-        console.log("inputChange()");
+        // console.log("inputChange()");
         setText(e.target.value);
     }
 
     function sendMessage() {
-        console.log("sendMessage()");
+        // console.log("sendMessage()");
 
         if (text.trim() !== "") {
             socket.emit("sendMessage", {
@@ -76,8 +64,8 @@ function Chat() {
     }
 
     function filterMessage(message) {
-        console.log("filterMessage() userId:", userId, "chatId:", chatId);
-        console.log("filterMessage() message:", message);
+        // console.log("filterMessage() userId:", userId, "chatId:", chatId);
+        // console.log("filterMessage() message:", message);
 
         const isGlobal = message.receiver_id == 0 && chatId == 0;
         const isTargetToMine =
@@ -88,12 +76,16 @@ function Chat() {
         if (isGlobal || isTargetToMine || isMineToTarget) {
             return (
                 <div key={message.id} className="chatMessage">
-                    <img id="headerUserPicture" src={message.picture} alt="" />
+                    <img
+                        id="headerUserPicture"
+                        src={message.picture || "/default_user.jpg"}
+                        alt=""
+                    />
                     <div>
                         <h4>
                             {message.first_name} {message.last_name}
                         </h4>
-                        <p>{message.text}</p>
+                        <p className="chatText">{message.text}</p>
                     </div>
                 </div>
             );
@@ -123,25 +115,6 @@ function Chat() {
                                 {messages.map((message) =>
                                     filterMessage(message)
                                 )}
-                                {/* {messages.map((message) => (
-                                    <div
-                                        key={message.id}
-                                        className="chatMessage"
-                                    >
-                                        <img
-                                            id="headerUserPicture"
-                                            src={message.picture}
-                                            alt=""
-                                        />
-                                        <div>
-                                            <h4>
-                                                {message.first_name}{" "}
-                                                {message.last_name}
-                                            </h4>
-                                            <p>{message.text}</p>
-                                        </div>
-                                    </div>
-                                ))} */}
                             </div>
                             <div>
                                 <textarea

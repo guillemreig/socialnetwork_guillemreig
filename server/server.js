@@ -105,23 +105,7 @@ io.on("connection", async (socket) => {
     });
 });
 
-// io.on("connection", (socket) => {
-//     console.log("new client connection", socket.id);
-
-//     socket.on("new-message", (payload) => {
-//         console.log("New message :", payload);
-//     });
-// });
-
 // MIDDLEWARE
-
-// app.use(
-//     cookieSession({
-//         secret: process.env.SESSION_SECRET,
-//         maxAge: 1000 * 60 * 60 * 24 * 1, // miliseconds * seconds * minutes * hours * days // currently: 1 day
-//         sameSite: true,
-//     })
-// );
 app.use(cookieSessionMiddleware);
 
 app.use(compression());
@@ -156,13 +140,16 @@ app.get("/user/:id.json", (req, res) => {
         id = req.session.id;
     }
     // if 'id' is another number, it comes from OtherUserPage and wants somoene else's data
-    db.getUserById(id)
+    Promise.all([db.getUserById(id), db.getFriendships(id)])
         .then((data) => {
-            // console.log("data :", data);
-            delete data[0].password; // caution!
-            data[0].created_at = data[0].created_at.toString().split(" GMT")[0];
+            console.log("promiseall data :", data);
 
-            res.json(data[0]);
+            delete data[0][0].password; // caution!
+            data[0][0].created_at = data[0][0].created_at
+                .toString()
+                .split(" GMT")[0];
+
+            res.json(data);
         })
         .catch((error) => {
             console.log(error);
@@ -288,8 +275,8 @@ app.post("/getcode", (req, res) => {
             }
         })
         .then((data) => {
-            console.log("data :", data);
             // (Code to send the code to email here)
+            data;
 
             return undefined;
         })
@@ -372,23 +359,33 @@ app.post("/profile", uploader.single("file"), (req, res) => {
                     message: "Email already in use!",
                 });
             } else {
-                if (req.file) {
-                    const { filename, mimetype, size, path } = req.file;
+                return db.getUserById(id);
+            }
+        })
+        .then((data) => {
+            const oldEmail = data[0].email;
 
-                    const promise = s3
-                        .putObject({
-                            Bucket: "spicedling",
-                            ACL: "public-read",
-                            Key: filename,
-                            Body: fs.createReadStream(path),
-                            ContentType: mimetype,
-                            ContentLength: size,
-                        })
-                        .promise();
+            if (oldEmail != email) {
+                return db.deleteCodes(oldEmail); // If email has changed, delete old codes before changing email
+            }
+        })
+        .then(() => {
+            if (req.file) {
+                const { filename, mimetype, size, path } = req.file;
 
-                    return promise;
-                    // return undefined; // Here should go the image upload thing
-                }
+                const promise = s3
+                    .putObject({
+                        Bucket: "spicedling",
+                        ACL: "public-read",
+                        Key: filename,
+                        Body: fs.createReadStream(path),
+                        ContentType: mimetype,
+                        ContentLength: size,
+                    })
+                    .promise();
+
+                return promise;
+                // return undefined; // Here should go the image upload thing
             }
         })
         .then(() => {
@@ -429,6 +426,62 @@ app.post("/profile", uploader.single("file"), (req, res) => {
             res.json({
                 success: false,
                 message: "Error updating profile!",
+            });
+            console.log(error);
+        });
+});
+
+// DELETE ACCOUNT
+app.post("/deleteaccount", (req, res) => {
+    console.log("DELETE ACCOUNT req.body :", req.body);
+    const id = req.session.id;
+    const email = req.body.email;
+
+    db.checkCode(email)
+        .then((data) => {
+            if (data.length > 0) {
+                if (req.body.code === data[0].code) {
+                    // Delete account, codes, friends and messages
+                    // promise all
+                    Promise.all([
+                        db.deleteMessages(id),
+                        db.deleteRequests(id),
+                        db.deleteCodes(email),
+                    ])
+                        .then(() => {
+                            return db.deleteAccount(id, email);
+                        })
+                        .then(() => {
+                            res.json({
+                                success: true,
+                                message: "Account deleted successfully!",
+                            });
+                        })
+                        .catch((error) => {
+                            res.json({
+                                success: false,
+                                message:
+                                    "Server error! Please contact tech support.",
+                            });
+                            console.log(error);
+                        });
+                } else {
+                    res.json({
+                        success: false,
+                        message: "Wrong code! Try again.",
+                    });
+                }
+            } else {
+                res.json({
+                    success: false,
+                    message: "Code expired! Try again.",
+                });
+            }
+        })
+        .catch((error) => {
+            res.json({
+                success: false,
+                message: "Server error! Please contact tech support.",
             });
             console.log(error);
         });
@@ -485,9 +538,10 @@ app.get("/status/:id.json", (req, res) => {
                     data[0].created_at = data[0].created_at
                         .toString()
                         .split(" GMT")[0];
+                    res.json(data[0]);
+                } else {
+                    res.json({ status: null });
                 }
-
-                res.json(data[0]);
             })
             .catch((error) => {
                 console.log(error);

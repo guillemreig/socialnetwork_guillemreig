@@ -15,7 +15,7 @@ function userReducer(user = initialState.user, action) {
     if (action.type == "/user/login") {
         return action.payload.user;
     } else if (action.type == "/user/edit") {
-        console.log("action.payload.user :", action.payload.user);
+        // console.log("action.payload.user :", action.payload.user);
         return action.payload.user;
     } else if (action.type == "/user/logout") {
         return initialState.user;
@@ -33,7 +33,7 @@ export function loginUser(user) {
 }
 
 export function editUser(user) {
-    console.log("reducer editUser");
+    // console.log("reducer editUser");
     return {
         type: "/user/edit",
         payload: { user },
@@ -120,7 +120,7 @@ function messagesReducer(messages = initialState.messages, action) {
         return action.payload.messages;
     } else if (action.type == "/messages/add") {
         // Ideally only if the correct chat is active the message should be added to the message array
-        // unfortunatelly I can't access
+        // unfortunately I can't access chatId from here
 
         const newMessages = [...messages, action.payload.message];
 

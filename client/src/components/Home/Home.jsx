@@ -12,7 +12,12 @@ import Chat from "./subcomponents/Chat.jsx";
 // REDUX
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { loginUser, logoutUser } from "../../redux/reducer.js";
+import {
+    loginUser,
+    logoutUser,
+    editUser,
+    getFriends,
+} from "../../redux/reducer.js";
 
 export default function Home() {
     const dispatch = useDispatch(); // For some reason this conversion is mandatory
@@ -21,7 +26,7 @@ export default function Home() {
     const [profileMenu, setProfileMenu] = useState(false); // is the profile window open? (default 'false')
 
     function logOut() {
-        console.log("logOut()");
+        // console.log("logOut()");
         dispatch(logoutUser());
 
         fetch("/logout");
@@ -34,11 +39,14 @@ export default function Home() {
     }
 
     function updateProfile(draft) {
-        console.log("updateProfile(). draft :", draft);
+        // console.log("updateProfile(). draft :", draft);
 
-        // Should remove message and editMode first (also closes edit mode)
+        // Should remove message and editMode from state first (also closes edit mode)
         delete draft.message;
         delete draft.editMode;
+
+        // update redux state
+        dispatch(editUser(draft));
 
         // this.setState({ user: { ...draft } });
 
@@ -51,9 +59,19 @@ export default function Home() {
                 return res.json();
             })
             .then((data) => {
-                !data.bio && (data.bio = "");
+                // Handle user data
+                const userData = data[0][0];
+                // console.log("Home userData (data[0][0]):", userData);
 
-                data && dispatch(loginUser(data)); // fetch user info from server and send it to redux global store
+                !userData.bio && (userData.bio = "");
+
+                userData && dispatch(loginUser(userData)); // fetch user info from server and send it to redux global store
+
+                // Handle friends data
+                const friendsData = data[1];
+                // console.log("Home friendsData (data[1]:", friendsData);
+
+                friendsData.length && dispatch(getFriends(data[1]));
             })
             .catch((error) => {
                 console.log(error);
@@ -68,7 +86,7 @@ export default function Home() {
                 <header>
                     <div className="logMenu">
                         <img
-                            src={user.picture || "default_user.jpg"}
+                            src={user.picture || "/default_user.jpg"}
                             id="headerUserPicture"
                             alt="user picture"
                             onClick={toggleProfile}
@@ -117,7 +135,7 @@ export default function Home() {
                 </Route>
 
                 <Route path="/user/:id">
-                    <OtherUser />
+                    <OtherUser id={user.id} />
                 </Route>
             </div>
         </>

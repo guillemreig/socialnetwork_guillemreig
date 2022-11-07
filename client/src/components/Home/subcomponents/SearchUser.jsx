@@ -10,7 +10,7 @@ function SearchUser() {
     const [users, setUsers] = useState([]);
 
     function inputChange(e) {
-        console.log("inputChange(e) :", e.target.value);
+        // console.log("inputChange(e) :", e.target.value);
 
         setSearchString(e.target.value);
 
@@ -28,7 +28,7 @@ function SearchUser() {
                     return res.json();
                 })
                 .then((data) => {
-                    console.log("data :", data);
+                    // console.log("data :", data);
                     setUsers(data);
                 })
                 .catch((error) => {

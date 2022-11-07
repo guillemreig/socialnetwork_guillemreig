@@ -29,6 +29,7 @@ export default function Friends(props) {
 
     useEffect(() => {
         // console.log("Friends useEffect");
+        // Update friends state
         fetch("/friendships.json")
             .then((res) => {
                 return res.json();

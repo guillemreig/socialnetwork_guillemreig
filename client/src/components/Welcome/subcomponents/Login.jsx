@@ -17,7 +17,7 @@ export default class Login extends React.Component {
         this.submitForm = this.submitForm.bind(this);
     }
     inputChange(e) {
-        console.log("inputChange()");
+        // console.log("inputChange()");
         this.setState({ [e.target.name]: e.target.value });
     }
 

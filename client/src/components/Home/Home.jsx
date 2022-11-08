@@ -23,6 +23,7 @@ export default function Home() {
     const dispatch = useDispatch(); // For some reason this conversion is mandatory
 
     const user = useSelector((state) => state.user);
+    const newRequest = useSelector((state) => state.newRequest);
     const [profileMenu, setProfileMenu] = useState(false); // is the profile window open? (default 'false')
 
     function logOut() {
@@ -104,7 +105,12 @@ export default function Home() {
                             <h3 className="button">Home</h3>
                         </Link>
                         <Link to="/friends">
-                            <h3 className="button">Friends</h3>
+                            <h3 className="button">
+                                Friends{" "}
+                                {newRequest && (
+                                    <span className="notificationDot">*</span>
+                                )}
+                            </h3>
                         </Link>
 
                         <h3 className="button" onClick={logOut}>

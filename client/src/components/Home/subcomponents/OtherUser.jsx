@@ -6,8 +6,8 @@ function OtherUser(props) {
     const { id } = useParams();
     const ownId = props.id;
 
-    console.log("id", id);
-    console.log("ownId", ownId);
+    // console.log("id", id);
+    // console.log("ownId", ownId);
 
     const [otherUser, setOtherUser] = useState({
         first_name: "",
@@ -70,6 +70,7 @@ function OtherUser(props) {
                             {otherUser.first_name} {otherUser.last_name}
                         </h2>
                         <h4>{otherUser.email}</h4>
+                        <p>Member since:</p>
                         <h4>{otherUser.created_at}</h4>
                         <p>{otherUser.bio}</p>
                         <div className="centeredFlex">

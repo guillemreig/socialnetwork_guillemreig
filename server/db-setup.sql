@@ -10,6 +10,7 @@ CREATE TABLE users (
     password VARCHAR NOT NULL,
     picture VARCHAR,
     bio VARCHAR,
+    online BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

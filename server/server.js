@@ -53,15 +53,46 @@ const socketId = {};
 io.on("connection", async (socket) => {
     const userId = socket.request.session.id;
     socketId[userId] = socket.id;
-    console.log("connection. id:", userId, "socketId:", socket.id);
-    console.log("socketId", socketId);
+
+    // console.log("connection. id:", userId, "socketId:", socket.id);
+    // console.log("socketId", socketId);
+
+    db.setUserOnlineStatus(userId, true); // Update online status
+
+    db.getFriendsId(userId).then((data) => {
+        // console.log("getFriendsId data:", data);
+
+        for (const element of data) {
+            const friendId = element.id;
+            if (Object.prototype.hasOwnProperty.call(socketId, friendId)) {
+                // console.log(`Friend Id: ${friendId} is online. Noticie friend`);
+
+                io.to(socketId[friendId]).emit("friendOnline", userId);
+            }
+        }
+    });
 
     if (!userId) {
         return socket.disconnect(true);
     }
 
     socket.on("disconnect", function () {
-        console.log("disconnect. id:", userId);
+        // console.log("disconnect. id:", userId);
+        db.setUserOnlineStatus(userId, false);
+        db.getFriendsId(userId).then((data) => {
+            // console.log("getFriendsId data:", data);
+
+            for (const element of data) {
+                const friendId = element.id;
+                if (Object.prototype.hasOwnProperty.call(socketId, friendId)) {
+                    // console.log(
+                    //     `Friend Id: ${friendId} is offline. Noticie friend`
+                    // );
+
+                    io.to(socketId[friendId]).emit("friendOffline", userId);
+                }
+            }
+        });
     });
 
     // 1. send them the latest messages
@@ -70,22 +101,22 @@ io.on("connection", async (socket) => {
 
     // 2. listen for a new message event
     socket.on("sendMessage", async (message) => {
-        console.log(message);
+        // console.log(message);
 
         const { chatId, text } = message;
 
-        console.log(
-            "userId:",
-            userId,
-            "socket.id",
-            socket.id,
-            "chatId",
-            chatId
-        );
+        // console.log(
+        //     "userId:",
+        //     userId,
+        //     "socket.id",
+        //     socket.id,
+        //     "chatId",
+        //     chatId
+        // );
         // 1. store the message in the database
         try {
             const messageId = await db.addMessage(userId, chatId, text);
-            const messageData = await db.getMessage(messageId[0].id); //!!!!!!!!!!!!
+            const messageData = await db.getMessage(messageId[0].id);
 
             // 2. send the message to all connected sockets
             // include all relevant information (user id, user name, picture, message, timestamp)
@@ -133,21 +164,30 @@ app.get("/user/id.json", (req, res) => {
 // get user data (own or other)
 app.get("/user/:id.json", (req, res) => {
     // console.log("GET USER. id :", req.params.id);
+    let userId;
 
-    let id = req.params.id;
-    // if 'id' is 0 the request comes from own Home page and wants own user data
-    if (id == 0) {
-        id = req.session.id;
+    if (req.params.id == 0) {
+        userId = req.session.id; // if 'id' is 0 the request comes from own Home page and wants own user data
+    } else {
+        userId = req.params.id; // if 'id' is another number, it comes from OtherUserPage and wants somoene else's data
     }
-    // if 'id' is another number, it comes from OtherUserPage and wants somoene else's data
-    Promise.all([db.getUserById(id), db.getFriendships(id)])
-        .then((data) => {
-            console.log("promiseall data :", data);
 
-            delete data[0][0].password; // caution!
+    Promise.all([db.getUserById(userId), db.getFriendships(userId)])
+        .then((data) => {
+            // console.log("promiseall data :", data); // data[0] is user data. data[1] is friends data
+            const pendingRequests = data[1].some((obj) => obj.status == false);
+
+            console.log("pendingRequests :", pendingRequests);
+
+            if (pendingRequests && req.params.id == 0) {
+                io.to(socketId[userId]).emit("newRequestUpdate", true);
+            }
+
+            delete data[0][0].password; // caution! Password must be deleted from data before sending it to client!
+
             data[0][0].created_at = data[0][0].created_at
                 .toString()
-                .split(" GMT")[0];
+                .split(" GMT")[0]; // We can change the format of the date here
 
             res.json(data);
         })
@@ -535,9 +575,6 @@ app.get("/status/:id.json", (req, res) => {
                 console.log("data :", data);
 
                 if (data[0]) {
-                    data[0].created_at = data[0].created_at
-                        .toString()
-                        .split(" GMT")[0];
                     res.json(data[0]);
                 } else {
                     res.json({ status: null });
@@ -562,7 +599,11 @@ app.get("/befriend/:id.json", (req, res) => {
 
     db.askFriendship(id1, id2)
         .then((data) => {
-            console.log("data :", data);
+            console.log("askFriendship data :", data);
+
+            if (Object.prototype.hasOwnProperty.call(socketId, id2)) {
+                io.to(socketId[id2]).emit("newRequestUpdate", true);
+            }
 
             res.json(data[0]);
         })

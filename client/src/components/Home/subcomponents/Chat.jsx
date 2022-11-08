@@ -128,7 +128,7 @@ function Chat() {
                             </div>
                         </div>
                         <div className="chatMenu">
-                            <div className="logMenu">
+                            <div>
                                 <h4
                                     className="button"
                                     onClick={() => {
@@ -139,7 +139,7 @@ function Chat() {
                                 </h4>
                             </div>
                             {acceptedFriends.map((user) => (
-                                <div key={user.id} className="logMenu">
+                                <div key={user.id}>
                                     <h4
                                         className="button"
                                         onClick={() => {
@@ -147,6 +147,12 @@ function Chat() {
                                         }}
                                     >
                                         {user.first_name} {user.last_name}
+                                        {user.online && (
+                                            <span className="onlineDot">
+                                                {" "}
+                                                ●
+                                            </span>
+                                        )}
                                     </h4>
                                 </div>
                             ))}

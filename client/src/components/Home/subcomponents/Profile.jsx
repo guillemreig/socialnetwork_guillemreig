@@ -215,7 +215,7 @@ export default class Profile extends Component {
                                         id="picture"
                                         src={
                                             this.state.picture ||
-                                            "default_user.jpg"
+                                            "/default_user.jpg"
                                         }
                                         alt="picture preview"
                                     />

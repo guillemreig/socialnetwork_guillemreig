@@ -13,6 +13,7 @@ function UserPage(props) {
                             {props.user.first_name} {props.user.last_name}
                         </h2>
                         <h4>{props.user.email}</h4>
+                        <p>Member since:</p>
                         <h4>{props.user.created_at}</h4>
                         <p>{props.user.bio}</p>
                     </div>

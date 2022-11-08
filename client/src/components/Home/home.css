@@ -222,8 +222,21 @@ header {
 
 .chatMenu {
     width: 200px;
+    padding-left: 20px;
     display: flex;
     flex-direction: column;
+    gap: 10px;
+}
+
+.onlineDot {
+    color: lime;
+    max-width: 0px;
+}
+
+.notificationDot {
+    color: red;
+    max-width: 0px;
+    float: right;
 }
 
 @keyframes panning {

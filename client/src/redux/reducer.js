@@ -5,6 +5,7 @@ import { combineReducers } from "redux";
 const initialState = {
     user: {},
     friends: [],
+    newRequest: false,
     chatId: 0,
     messages: [],
 };
@@ -66,8 +67,21 @@ function friendsReducer(friends = initialState.friends, action) {
         newFriends.splice(index, 1);
 
         return newFriends;
-    }
+    } else if (action.type === "friends/online") {
+        const index = friends.map((user) => user.id).indexOf(action.payload.id);
 
+        const newFriends = [...friends];
+        newFriends[index].online = true;
+
+        return newFriends;
+    } else if (action.type === "friends/offline") {
+        const index = friends.map((user) => user.id).indexOf(action.payload.id);
+
+        const newFriends = [...friends];
+        newFriends[index].online = false;
+
+        return newFriends;
+    }
     // console.log("friends :", friends);
     return friends;
 }
@@ -91,6 +105,38 @@ export function rejectFriend(id) {
     return {
         type: "friends/reject",
         payload: { id },
+    };
+}
+
+export function friendOnline(id) {
+    return {
+        type: "friends/online",
+        payload: { id },
+    };
+}
+
+export function friendOffline(id) {
+    return {
+        type: "friends/offline",
+        payload: { id },
+    };
+}
+
+// FRIENDS NOTIFICATION
+// reducer
+function newRequestReducer(newRequest = initialState.newRequest, action) {
+    if (action.type == "/newrequest/update") {
+        return action.payload.newRequest;
+    }
+
+    return newRequest;
+}
+
+// actions
+export function newRequestUpdate(newRequest) {
+    return {
+        type: "/newrequest/update",
+        payload: { newRequest },
     };
 }
 
@@ -156,6 +202,7 @@ export function addMessage(message) {
 const rootReducer = combineReducers({
     user: userReducer,
     friends: friendsReducer,
+    newRequest: newRequestReducer,
     chatId: chatIdReducer,
     messages: messagesReducer,
 });

@@ -8,6 +8,7 @@ import {
     getFriends,
     acceptFriend,
     rejectFriend,
+    newRequestUpdate,
 } from "../../../redux/reducer.js";
 
 export default function Friends(props) {
@@ -29,7 +30,9 @@ export default function Friends(props) {
 
     useEffect(() => {
         // console.log("Friends useEffect");
-        // Update friends state
+        dispatch(newRequestUpdate(false)); // We turn of the notification dot by changing the global state
+
+        // Update friends state with the data from the database
         fetch("/friendships.json")
             .then((res) => {
                 return res.json();
@@ -88,6 +91,7 @@ export default function Friends(props) {
                             {props.user.first_name} {props.user.last_name}
                         </h2>
                         <h4>{props.user.email}</h4>
+                        <p>Member since:</p>
                         <h4>{props.user.created_at}</h4>
                         <p>{props.user.bio}</p>
                     </div>
@@ -104,7 +108,7 @@ export default function Friends(props) {
                                 alt="user picture"
                             />
                             <Link to={`/user/${user.id}`}>
-                                <h3>
+                                <h3 className="button">
                                     {user.first_name} {user.last_name}
                                 </h3>{" "}
                             </Link>
@@ -139,7 +143,7 @@ export default function Friends(props) {
                                 alt="user picture"
                             />
                             <Link to={`/user/${user.id}`}>
-                                <h3>
+                                <h3 className="button">
                                     {user.first_name} {user.last_name}
                                 </h3>{" "}
                             </Link>

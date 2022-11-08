@@ -271,10 +271,23 @@ function acceptFriendshipRequest(user1, user2) {
 // get friendships
 function getFriendships(id) {
     const sql = `
-    SELECT users.id, first_name, last_name, picture, status
+    SELECT users.id, first_name, last_name, picture, status, online
     FROM users JOIN requests
     ON (status = false AND receiver_id = $1 AND users.id = requests.sender_id)
     OR (status = true AND receiver_id = $1 AND users.id = requests.sender_id)
+    OR (status = true AND sender_id = $1 AND users.id = requests.receiver_id)
+    ;`;
+    return db
+        .query(sql, [id])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in getFriendships:", error));
+}
+
+function getFriendsId(id) {
+    const sql = `
+    SELECT users.id
+    FROM users JOIN requests
+    ON (status = true AND receiver_id = $1 AND users.id = requests.sender_id)
     OR (status = true AND sender_id = $1 AND users.id = requests.receiver_id)
     ;`;
     return db
@@ -340,6 +353,19 @@ function getMessage(messageId) {
         .catch((error) => console.log("Error in getMessage:", error));
 }
 
+// ONLINE STATUS
+function setUserOnlineStatus(id, boolean) {
+    const sql = `
+    UPDATE users
+    SET online = $2
+    WHERE id = $1
+    ;`;
+    return db
+        .query(sql, [id, boolean])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in setUserOnlineStatus:", error));
+}
+
 // EXPORTS
 module.exports = {
     checkEmail,
@@ -363,8 +389,10 @@ module.exports = {
     cancelFriendshipRequest,
     acceptFriendshipRequest,
     getFriendships,
+    getFriendsId,
     getMessages,
     getMessagesGlobal,
     addMessage,
     getMessage,
+    setUserOnlineStatus,
 };

@@ -220,7 +220,7 @@ export default class Profile extends Component {
                                         alt="picture preview"
                                     />
 
-                                    <form id="form">
+                                    <form>
                                         <input
                                             type="file"
                                             name="file"

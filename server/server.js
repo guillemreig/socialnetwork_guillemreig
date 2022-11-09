@@ -172,7 +172,11 @@ app.get("/user/:id.json", (req, res) => {
         userId = req.params.id; // if 'id' is another number, it comes from OtherUserPage and wants somoene else's data
     }
 
-    Promise.all([db.getUserById(userId), db.getFriendships(userId)])
+    Promise.all([
+        db.getUserById(userId),
+        db.getFriendships(userId),
+        db.getAllPostsByUserId(userId),
+    ])
         .then((data) => {
             // console.log("promiseall data :", data); // data[0] is user data. data[1] is friends data
             const pendingRequests = data[1].some((obj) => obj.status == false);
@@ -188,6 +192,12 @@ app.get("/user/:id.json", (req, res) => {
             data[0][0].created_at = data[0][0].created_at
                 .toString()
                 .split(" GMT")[0]; // We can change the format of the date here
+
+            data[2].forEach((element) => {
+                element.created_at = element.created_at
+                    .toString()
+                    .split(" GMT")[0];
+            });
 
             res.json(data);
         })
@@ -696,6 +706,114 @@ app.get("/messages/:id.json", (req, res) => {
             })
             .catch((error) => {
                 console.log(error);
+            });
+    }
+});
+
+// ADD POST
+// Get all posts
+app.get("/allposts/:id.json", (req, res) => {
+    console.log(
+        "GET ALL POSTS. req.session.id :",
+        req.session.id,
+        "req.params,id :",
+        req.params.id
+    );
+
+    let userId;
+
+    if (req.params.id == 0) {
+        userId = req.session.id; // if 'id' is 0 the request comes from own Home page and wants own user data
+    } else {
+        userId = req.params.id; // if 'id' is another number, it comes from OtherUserPage and wants somoene else's data
+    }
+
+    db.getAllPostsByUserId(userId)
+        .then((data) => {
+            data.forEach((element) => {
+                element.created_at = element.created_at
+                    .toString()
+                    .split(" GMT")[0];
+            });
+            res.json(data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+});
+
+// Create post
+app.post("/post", uploader.single("file"), (req, res) => {
+    console.log("POST. req.body :", req.body);
+    console.log("req.file :", req.file);
+
+    const { id } = req.session;
+    const { title, post_text } = req.body;
+
+    if (req.file) {
+        const { filename, mimetype, size, path } = req.file;
+
+        const promise = s3
+            .putObject({
+                Bucket: "spicedling",
+                ACL: "public-read",
+                Key: filename,
+                Body: fs.createReadStream(path),
+                ContentType: mimetype,
+                ContentLength: size,
+            })
+            .promise();
+
+        promise
+            .then(() => {
+                // CREATE URL
+                const image = `https://s3.amazonaws.com/spicedling/${req.file.filename}`;
+
+                // DELETE IMAGE FROM LOCAL STORAGE
+                fs.unlink(req.file.path, function (err) {
+                    if (err) {
+                        console.error("Error in fs.unlink:", err);
+                    } else {
+                        console.log("File removed!", req.file.path);
+                    }
+                });
+                // PUT DATA IN DATABASE AND GET THE ID
+                console.log("addPostWithPic");
+                return db.addPostWithPic(id, title, post_text, image);
+            })
+            // .then((data) => {
+            //     return db.getPostById(data[0].id);
+            // })
+            .then((data) => {
+                res.json({
+                    success: true,
+                    post: data[0],
+                });
+            })
+            .catch((error) => {
+                res.json({
+                    success: false,
+                    message: "Error posting with image!",
+                });
+                console.log(error);
+            });
+    } else {
+        console.log("addPostNoPic");
+        db.addPostNoPic(id, title, post_text)
+            // .then((data) => {
+            //     return db.getPostById(data[0].id);
+            // })
+            .then((data) => {
+                res.json({
+                    success: true,
+                    post: data[0],
+                });
+            })
+            .catch(() => {
+                res.json({
+                    success: false,
+                    message: "Error posting!",
+                });
             });
     }
 });

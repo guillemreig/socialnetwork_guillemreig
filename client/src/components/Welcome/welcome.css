@@ -202,13 +202,13 @@
 
 @keyframes panning3 {
     0% {
-        background-position: -10px 0%;
+        background-position: -12px 0%;
     }
     50% {
         background-position: -18px 0%;
     }
     100% {
-        background-position: -10px 0%;
+        background-position: -12px 0%;
     }
 }
 

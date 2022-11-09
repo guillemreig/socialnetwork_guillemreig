@@ -67,6 +67,12 @@ button {
     gap: 20px;
 }
 
+.columnFlex {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 .button {
     cursor: pointer;
     color: #ffddb0;

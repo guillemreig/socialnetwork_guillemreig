@@ -19,6 +19,7 @@ function OtherUser(props) {
         friendStatus: "",
     });
     const [otherUserFriends, setOtherUserFriends] = useState([]);
+    const [posts, setPosts] = useState([]);
 
     useEffect(() => {
         // console.log("OtherUserPage useEffect(id)", id);
@@ -49,6 +50,10 @@ function OtherUser(props) {
                     setOtherUserFriends(
                         friendsData.filter((user) => user.status === true)
                     );
+
+                    // Handle posts data
+                    const posts = data[2];
+                    setPosts(posts);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -94,7 +99,27 @@ function OtherUser(props) {
                 </div>
             </div>
             <div className="timeline">
-                <h1>OTHER USER COMPONENT</h1>
+                <h1>{otherUser.first_name}&apos;s Timeline</h1>
+                {posts.map((post) => (
+                    <div key={post.id} className="post">
+                        {post.image && (
+                            <img id="picture" src={post.image} alt="" />
+                        )}
+                        <div className="postBody">
+                            <h3>
+                                {post.title}{" "}
+                                <span className="date">
+                                    ({post.created_at})
+                                </span>
+                            </h3>
+                            <p className="postText">{post.post_text}</p>
+                            <div className="centeredFlex">
+                                <button>Edit</button>
+                                <button>Add comment</button>
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );

@@ -366,6 +366,56 @@ function setUserOnlineStatus(id, boolean) {
         .catch((error) => console.log("Error in setUserOnlineStatus:", error));
 }
 
+// ADD POST
+function addPostWithPic(poster_id, title, post_text, image) {
+    const sql = `
+    INSERT INTO posts (poster_id, title, post_text, image)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *
+    ;`;
+    return db
+        .query(sql, [poster_id, title, post_text, image])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in addPostWithPic:", error));
+}
+
+function addPostNoPic(poster_id, title, post_text) {
+    const sql = `
+    INSERT INTO posts (poster_id, title, post_text)
+    VALUES ($1, $2, $3)
+    RETURNING *
+    ;`;
+    return db
+        .query(sql, [poster_id, title, post_text])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in addPostNoPic:", error));
+}
+
+// function getPostById(postId) {
+//     const sql = `
+//     SELECT posts.id, poster_id, title, post_text, image, posts.created_at
+//     FROM posts
+//     JOIN users ON poster_id = users.id
+//     WHERE posts.id = $1
+//     ;`;
+//     return db
+//         .query(sql, [postId])
+//         .then((result) => result.rows)
+//         .catch((error) => console.log("Error in addPostWithPic:", error));
+// }
+
+function getAllPostsByUserId(userId) {
+    const sql = `
+    SELECT *
+    FROM posts
+    WHERE poster_id = $1
+    ;`;
+    return db
+        .query(sql, [userId])
+        .then((result) => result.rows)
+        .catch((error) => console.log("Error in getAllPostsByUserI:", error));
+}
+
 // EXPORTS
 module.exports = {
     checkEmail,
@@ -395,4 +445,8 @@ module.exports = {
     addMessage,
     getMessage,
     setUserOnlineStatus,
+    addPostWithPic,
+    addPostNoPic,
+    // getPostById,
+    getAllPostsByUserId,
 };
